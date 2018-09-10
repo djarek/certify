@@ -17,3 +17,18 @@ jobs:
     - run:
         command: curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
         name: Upload to CodeCov
+  macbuild:
+    macos:
+      xcode: "10.0.0"
+    steps:
+    - checkout
+    - run:
+        command: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+        name: Build & Run tests
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - linuxbuild
+      - macbuild
