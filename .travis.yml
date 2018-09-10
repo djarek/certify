@@ -1,0 +1,34 @@
+sudo: false
+
+language: cpp
+
+addons:
+  apt:
+    sources: &base_sources
+      - ubuntu-toolchain-r-test
+
+matrix:
+  include:
+    # Default g++
+    - os: linux
+      compiler: g++
+      script: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+
+    # Default clang++
+    - os: linux
+      compiler: clang++
+      script: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+
+    # GCC 6.0, Debug + Coverage
+    - os: linux
+      compiler: g++-6
+      addons:
+        apt:
+          packages:
+            - g++-6
+            - lcov
+            - libssl-dev
+      script:
+        - ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+        - ./tools/coverage.sh
+        - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
