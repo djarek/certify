@@ -1,0 +1,19 @@
+version: 2
+
+jobs:
+  linuxbuild:
+    docker:
+      - image: djarek/boost-docker:1.68.0
+        environment:
+          LD_LIBRARY_PATH: /usr/local/lib
+    steps:
+    - checkout
+    - run:
+        command: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+        name: Build & Run tests
+    - run:
+        command: tools/coverage.sh
+        name: Coverage
+    - run:
+        command: curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
+        name: Upload to CodeCov
