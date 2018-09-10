@@ -1,0 +1,13 @@
+﻿---
+BasedOnStyle: Mozilla
+BreakBeforeBraces: Allman
+ColumnLimit: '80'
+Cpp11BracedListStyle: 'true'
+IndentWidth: '4'
+Language: Cpp
+SortIncludes: 'true'
+Standard: Cpp11
+UseTab: Never
+AccessModifierOffset: -4
+AllowShortFunctionsOnASingleLine: 'false'
+...
