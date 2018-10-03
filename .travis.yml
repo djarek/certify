@@ -14,39 +14,39 @@ matrix:
       compiler: g++
       env:
         - BOOST_TOOLSET=gcc
-      script: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests
 
     # Default clang++
     - os: linux
       compiler: clang++
       env:
         - BOOST_TOOLSET=clang
-      script: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests 
 
     # GCC 6.0, Debug + Coverage
-    - os: linux
-      compiler: g++-6
-      env:
-        - BOOST_TOOLSET=gcc
-      addons:
-        apt:
-          packages:
-            - g++-6
-            - lcov
-            - libssl-dev
-          sources:
-            - *base_sources
-      script:
-        - ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
-        - ./tools/coverage.sh
-        - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
+#   - os: linux
+#     compiler: g++-6
+#     env:
+#       - BOOST_TOOLSET=gcc
+#     addons:
+#       apt:
+#         packages:
+#           - g++-6
+#           - lcov
+#           - libssl-dev
+#         sources:
+#           - *base_sources
+#     script:
+#       - ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+#       - ./tools/coverage.sh
+#       - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
 
-env:
-  global:
-    - BOOST_PREFIX=$TRAVIS_BUILD_DIR/boost_dir
-    - BOOST_INCLUDEDIR=$BOOST_PREFIX/include
-    - BOOST_LIBRARYDIR=$BOOST_PREFIX/lib
 
 install:
-  - mkdir boost_dir
-  - tools/get_boost.sh
+  - cd ..
+  - git clone -b master --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - $TRAVIS_BUILD_DIR/tools/get_boost.sh
+  - mkdir libs/certify
+  - cp -r $TRAVIS_BUILD_DIR/* libs/certify
+  - ./bootstrap.sh
