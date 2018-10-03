@@ -1,17 +1,11 @@
 #include <boost/certify/rfc2818_verification.hpp>
 
-
-#include <boost/test/unit_test.hpp>
-
+#include <boost/core/lightweight_test.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl.hpp>
 
-namespace boost
-{
-namespace certify
-{
 namespace
 {
 
@@ -26,7 +20,8 @@ resolve(boost::asio::io_context& ctx, std::string const& hostname)
 
 } // namespace
 
-BOOST_AUTO_TEST_CASE(rfc_2818_verification_test)
+int
+main()
 {
     boost::asio::io_context io_ctx;
     boost::asio::ssl::context client_ctx{
@@ -43,9 +38,7 @@ BOOST_AUTO_TEST_CASE(rfc_2818_verification_test)
     boost::asio::connect(client.next_layer(), resolve(io_ctx, domain_name));
 
     client.set_verify_mode(boost::asio::ssl::verify_peer);
-    client.set_verify_callback(rfc2818_verification{domain_name});
+    client.set_verify_callback(boost::certify::rfc2818_verification{domain_name});
     client.handshake(boost::asio::ssl::stream_base::handshake_type::client);
+    return boost::report_errors();
 }
-
-} // namespace certify
-} // namespace boost
