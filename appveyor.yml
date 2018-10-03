@@ -1,0 +1,39 @@
+image: Visual Studio 2017
+
+shallow_clone: true
+  
+environment:
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
+  matrix:
+    - COMPILER: msvc
+      GENERATOR: Visual Studio 15 2017 Win64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      PLATFORM: x64
+      BUILD_TYPE: Debug
+      VCPKG_TRIPLET: x64-windows
+
+    - COMPILER: msvc
+      GENERATOR: Visual Studio 15 2017 Win64
+      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      PLATFORM: x64
+      BUILD_TYPE: Release
+      VCPKG_TRIPLET: x64-windows
+
+install:
+  - ps: vcpkg install boost-asio boost-system boost-test boost-date-time --triplet "$env:VCPKG_TRIPLET"
+  - ps: vcpkg integrate install
+
+build: off
+
+before_build:
+  - ps: mkdir build
+  - ps: cd build
+
+build_script:
+  - ps: cmake -G "$env:GENERATOR" -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_TOOLCHAIN_FILE="C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+  - ps: cmake --build . --config $env:BUILD_TYPE
+
+test_script:
+  - ps: ctest -VV --output-on-failure -C $env:BUILD_TYPE
+
+cache: c:\tools\vcpkg\installed\

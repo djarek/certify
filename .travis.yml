@@ -1,0 +1,52 @@
+sudo: false
+
+language: cpp
+
+addons:
+  apt:
+    sources: &base_sources
+      - ubuntu-toolchain-r-test
+
+matrix:
+  include:
+    # Default g++
+    - os: linux
+      compiler: g++
+      env:
+        - BOOST_TOOLSET=gcc
+      script: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+
+    # Default clang++
+    - os: linux
+      compiler: clang++
+      env:
+        - BOOST_TOOLSET=clang
+      script: ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+
+    # GCC 6.0, Debug + Coverage
+    - os: linux
+      compiler: g++-6
+      env:
+        - BOOST_TOOLSET=gcc
+      addons:
+        apt:
+          packages:
+            - g++-6
+            - lcov
+            - libssl-dev
+          sources:
+            - *base_sources
+      script:
+        - ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
+        - ./tools/coverage.sh
+        - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
+
+env:
+  global:
+    - BOOST_PREFIX=$TRAVIS_BUILD_DIR/boost_dir
+    - BOOST_INCLUDEDIR=$BOOST_PREFIX/include
+    - BOOST_LIBRARYDIR=$BOOST_PREFIX/lib
+
+install:
+  - mkdir boost_dir
+  - tools/get_boost.sh
