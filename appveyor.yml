@@ -2,38 +2,33 @@ image: Visual Studio 2017
 
 shallow_clone: true
   
-environment:
-  APPVEYOR_SAVE_CACHE_ON_ERROR: true
-  matrix:
-    - COMPILER: msvc
-      GENERATOR: Visual Studio 15 2017 Win64
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      PLATFORM: x64
-      BUILD_TYPE: Debug
-      VCPKG_TRIPLET: x64-windows
+configuration:
+#  - Debug
+  - Release
 
-    - COMPILER: msvc
-      GENERATOR: Visual Studio 15 2017 Win64
-      APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-      PLATFORM: x64
-      BUILD_TYPE: Release
-      VCPKG_TRIPLET: x64-windows
+platform:
+#  - x86
+  - x64
+
+environment:
+  OPENSSL_ROOT: C:\tools\vcpkg\installed\x64-windows
 
 install:
-  - ps: vcpkg install boost-asio boost-system boost-test boost-date-time --triplet "$env:VCPKG_TRIPLET"
-  - ps: vcpkg integrate install
+  - vcpkg install openssl --triplet x64-windows
+  - ps: cp tools\user-config.jam ~\user-config.jam
+  - SET BOOST_BRANCH=develop
+  - IF "%APPVEYOR_REPO_BRANCH%" == "master" SET BOOST_BRANCH=master
+  - cd ..
+  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
+  - cd boost-root
+  - bash %APPVEYOR_BUILD_FOLDER%\tools\get_boost.sh
+  - mkdir libs\certify
+  - XCOPY /s /e /q %APPVEYOR_BUILD_FOLDER% libs\certify\
+  - CMD /c bootstrap
 
 build: off
 
-before_build:
-  - ps: mkdir build
-  - ps: cd build
-
-build_script:
-  - ps: cmake -G "$env:GENERATOR" -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCMAKE_TOOLCHAIN_FILE="C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake" ..
-  - ps: cmake --build . --config $env:BUILD_TYPE
-
 test_script:
-  - ps: ctest -VV --output-on-failure -C $env:BUILD_TYPE
+  - b2 cxxstd=11 address-model=64 libs\certify\tests
 
 cache: c:\tools\vcpkg\installed\

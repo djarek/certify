@@ -12,6 +12,9 @@ import testing ;
 
 lib crypt32 ;
 
+lib ssl ;
+lib crypto ;
+
 lib ssl : : <target-os>windows <name>ssleay32 ;
 lib crypto : : <target-os>windows <name>libeay32 ;
 
