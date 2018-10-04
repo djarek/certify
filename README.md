@@ -1,3 +1,3 @@
 | Linux/OSX | Windows | Coverage |
 |-----------|---------|----------|
-|[![Build status](https://travis-ci.org/djarek/netutils.svg?branch=master)](https://travis-ci.org/djarek/netutils) | [![Build status](https://ci.appveyor.com/api/projects/status/sylshhmolk2205o5?svg=true)](https://ci.appveyor.com/project/djarek/netutils) | [![codecov](https://codecov.io/gh/djarek/netutils/branch/master/graph/badge.svg)](https://codecov.io/gh/djarek/netutils)
+[![Build Status](https://travis-ci.org/djarek/certify.svg?branch=master)](https://travis-ci.org/djarek/certify) | [![Build status](https://ci.appveyor.com/api/projects/status/4u2oe4l7am609bv0?svg=true)](https://ci.appveyor.com/project/djarek/certify) | [![codecov](https://codecov.io/gh/djarek/certify/branch/master/graph/badge.svg)](https://codecov.io/gh/djarek/certify)
