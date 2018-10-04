@@ -21,7 +21,7 @@ matrix:
       compiler: clang++
       env:
         - BOOST_TOOLSET=clang
-      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests 
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests
 
     # GCC 6.0, Debug + Coverage
 #   - os: linux
@@ -44,9 +44,6 @@ matrix:
 
 install:
   - cd ..
-  - git clone -b master --depth 1 https://github.com/boostorg/boost.git boost-root
+  - $TRAVIS_BUILD_DIR/tools/get_boost.sh $TRAVIS_BRANCH $TRAVIS_BUILD_DIR
   - cd boost-root
-  - $TRAVIS_BUILD_DIR/tools/get_boost.sh
-  - mkdir libs/certify
-  - cp -r $TRAVIS_BUILD_DIR/* libs/certify
   - ./bootstrap.sh

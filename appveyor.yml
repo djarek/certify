@@ -1,34 +1,36 @@
 image: Visual Studio 2017
 
 shallow_clone: true
-  
+
 configuration:
-#  - Debug
+  - Debug
   - Release
 
 platform:
-#  - x86
+  - x86
   - x64
 
 environment:
-  OPENSSL_ROOT: C:\tools\vcpkg\installed\x64-windows
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
 
 install:
-  - vcpkg install openssl --triplet x64-windows
+  - ps: $triplet = "$($env:PLATFORM)-windows"
+  - ps: $env:OPENSSL_ROOT = "C:\tools\vcpkg\installed\$($triplet)"
+  - ps: $configuration = $env:CONFIGURATION.ToLower()
+  - ps: vcpkg install openssl --triplet $triplet
   - ps: cp tools\user-config.jam ~\user-config.jam
-  - SET BOOST_BRANCH=develop
-  - IF "%APPVEYOR_REPO_BRANCH%" == "master" SET BOOST_BRANCH=master
   - cd ..
-  - git clone -b %BOOST_BRANCH% --depth 1 https://github.com/boostorg/boost.git boost-root
-  - cd boost-root
-  - bash %APPVEYOR_BUILD_FOLDER%\tools\get_boost.sh
-  - mkdir libs\certify
-  - XCOPY /s /e /q %APPVEYOR_BUILD_FOLDER% libs\certify\
-  - CMD /c bootstrap
+  - bash -c '$APPVEYOR_BUILD_FOLDER/tools/get_boost.sh $APPVEYOR_REPO_BRANCH $APPVEYOR_BUILD_FOLDER'
+  - ps: cd boost-root
+  - ps: ./bootstrap.bat
 
 build: off
 
 test_script:
-  - b2 cxxstd=11 address-model=64 libs\certify\tests
+  - ps: if ($env:PLATFORM -eq "x86") { $addr_model = "32" } else { $addr_model = "64" }
+  - ps: .\b2.exe toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tests
+  - git clean -fdx
 
-cache: c:\tools\vcpkg\installed\
+cache:
+  - c:\tools\vcpkg\installed\
+  - c:\projects\boost-root
