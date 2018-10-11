@@ -20,14 +20,14 @@ resolve(boost::asio::io_context& ctx, std::string const& hostname)
 void
 dump_cert_chain(STACK_OF(X509) * chain, std::string const& file_name)
 {
-    auto const chain_num = ::sk_X509_num(chain);
+    auto const chain_num = sk_X509_num(chain);
     auto const fcloser = [](std::FILE* f) { std::fclose(f); };
     std::unique_ptr<std::FILE, decltype(fcloser)> file{
       std::fopen(file_name.c_str(), "wb"), fcloser};
     assert(file != nullptr);
     for (int i = 0; i < chain_num; ++i)
     {
-        auto* const cert = ::sk_X509_value(chain, i);
+        auto* const cert = sk_X509_value(chain, i);
         assert(cert != nullptr);
         auto const ret = ::PEM_write_X509(file.get(), cert);
         assert(ret == 1);
@@ -66,7 +66,7 @@ main(int argc, char** argv)
                     boost::asio::ssl::verify_context& verify_ctx) {
           auto* const chain =
             ::X509_STORE_CTX_get_chain(verify_ctx.native_handle());
-          if (!preverified || ::sk_X509_num(chain) <= 0)
+          if (!preverified || sk_X509_num(chain) <= 0)
               return false;
           dump_cert_chain(chain, domain_name + ".crt");
 
