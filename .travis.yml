@@ -9,19 +9,26 @@ addons:
 
 matrix:
   include:
-    # Default g++
+    # g++5
     - os: linux
-      compiler: g++
+      addons:
+        apt:
+          packages:
+            - g++-5
+          sources:
+            - *base_sources
+
+      compiler: g++-5
       env:
-        - BOOST_TOOLSET=gcc
-      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests
+        - BOOST_TOOLSET=gcc-5
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/
 
     # Default clang++
     - os: linux
       compiler: clang++
       env:
         - BOOST_TOOLSET=clang
-      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/
 
     # GCC 6.0, Debug + Coverage
 #   - os: linux
