@@ -1,0 +1,42 @@
+#
+# Copyright (c) 2018 Damian Jarek (damian dot jarek93 at gmail dot com)
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+import testing ;
+
+lib crypt32 ;
+
+lib ssl ;
+lib crypto ;
+
+lib ssl : : <target-os>windows <name>ssleay32 ;
+lib crypto : : <target-os>windows <name>libeay32 ;
+
+project /boost/certify/tools
+  : requirements
+    <library>/boost/system//boost_system
+    <library>ssl
+    <library>crypto
+    <target-os>windows:<library>crypt32
+    <define>BOOST_ALL_NO_LIB=1
+    <define>BOOST_ASIO_DISABLE_BOOST_ARRAY=1
+    <define>BOOST_ASIO_DISABLE_BOOST_BIND=1
+    <define>BOOST_ASIO_DISABLE_BOOST_DATE_TIME=1
+    <define>BOOST_ASIO_DISABLE_BOOST_REGEX=1
+    <threading>multi
+    <target-os>solaris:<library>socket
+    <target-os>solaris:<library>nsl
+    <target-os>windows:<define>_WIN32_WINNT=0x0501
+    <target-os>windows,<toolset>gcc:<library>ws2_32
+    <target-os>windows,<toolset>gcc:<library>mswsock
+    <target-os>windows,<toolset>gcc-cygwin:<define>__USE_W32_SOCKETS
+    <target-os>hpux,<toolset>gcc:<define>_XOPEN_SOURCE_EXTENDED
+    <target-os>hpux:<library>ipv6
+    <target-os>haiku:<library>network
+  ;
+
+
+exe download-cert-chain :
+    download_cert_chain.cpp : ;
