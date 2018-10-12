@@ -21,6 +21,7 @@ git submodule update --init libs/container_hash
 git submodule update --init libs/core
 git submodule update --init libs/date_time
 git submodule update --init libs/detail
+git submodule update --init libs/filesystem
 git submodule update --init libs/integer
 git submodule update --init libs/io
 git submodule update --init libs/iterator
