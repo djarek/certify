@@ -28,8 +28,8 @@ build: off
 
 test_script:
   - ps: if ($env:PLATFORM -eq "x86") { $addr_model = "32" } else { $addr_model = "64" }
-  - ps: .\b2.exe toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tests
-  - ps: .\b2.exe toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tools
+  - ps: .\b2.exe variant=$configuration toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tests
+  - ps: .\b2.exe variant=$configuration toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tools
 
 cache:
   - c:\tools\vcpkg\installed\

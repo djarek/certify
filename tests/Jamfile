@@ -18,6 +18,7 @@ project /boost/certify/tests
   : requirements
     <library>/boost/date_time//boost_date_time
     <library>/boost/system//boost_system
+    <library>/boost/filesystem//boost_filesystem
     <library>ssl
     <library>crypto
     <target-os>windows:<library>crypt32
