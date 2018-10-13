@@ -31,22 +31,21 @@ matrix:
       script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/
 
     # GCC 6.0, Debug + Coverage
-#   - os: linux
-#     compiler: g++-6
-#     env:
-#       - BOOST_TOOLSET=gcc
-#     addons:
-#       apt:
-#         packages:
-#           - g++-6
-#           - lcov
-#           - libssl-dev
-#         sources:
-#           - *base_sources
-#     script:
-#       - ctest --output-on-failure -VV -S CMakeModules/ci_build.cmake
-#       - ./tools/coverage.sh
-#       - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f build/coverage.info -y ./.codecov.yml
+    - os: linux
+      compiler: g++-6
+      env:
+        - BOOST_TOOLSET=gcc-6
+      addons:
+        apt:
+          packages:
+            - g++-6
+            - lcov
+          sources:
+            - *base_sources
+      script:
+        - ./b2 variant=debug cxxstd=11 toolset=$BOOST_TOOLSET linkflags="-fprofile-arcs" cxxflags="-fprofile-arcs -ftest-coverage" libs/certify/tests libs/certify/tools/
+        - ./libs/certify/tools/coverage.sh
+        - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f bin.v2/coverage.info -y ./.codecov.yml
 
 
 install:
