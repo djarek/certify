@@ -1,13 +1,9 @@
 #include <boost/certify/rfc2818_verification.hpp>
 
-#include <boost/asio/connect.hpp>
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/ssl.hpp>
-
-#include <boost/core/lightweight_test.hpp>
+#include <boost/asio/ssl/error.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/system/error_code.hpp>
 
 namespace boost
 {
@@ -257,21 +253,3 @@ verify_chain(boost::filesystem::path const& chain_path,
 
 } // namespace certify
 } // namespace boost
-
-int
-main()
-{
-    boost::certify::certificate_store store;
-    store.set_default_paths();
-
-    int count = 0;
-    for (auto const& entry : boost::filesystem::directory_iterator{
-           "libs/certify/tests/res/chains/"})
-    {
-        boost::certify::verify_chain(entry.path(), store);
-        ++count;
-    }
-    BOOST_TEST(count > 0);
-
-    return boost::report_errors();
-}
