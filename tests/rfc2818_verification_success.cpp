@@ -13,7 +13,10 @@ main()
     for (auto const& entry : boost::filesystem::directory_iterator{
            "libs/certify/tests/res/chains/"})
     {
-        boost::certify::verify_chain(entry.path(), store);
+        boost::system::error_code ec;
+        boost::certify::verify_chain(entry.path(), store, ec);
+        if (ec)
+            BOOST_ERROR((entry.path().string() + ": " + ec.message()).c_str());
         ++count;
     }
     BOOST_TEST(count > 0);
