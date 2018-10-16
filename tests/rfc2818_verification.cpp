@@ -14,19 +14,6 @@ namespace boost
 namespace certify
 {
 
-namespace
-{
-
-template<typename T>
-void
-assign_ssl_error(T&&, system::error_code& ec)
-{
-    ec = {static_cast<int>(::ERR_get_error()),
-          boost::asio::error::get_ssl_category()};
-}
-
-} // namespace
-
 class certificate_chain
 {
 public:
@@ -90,8 +77,9 @@ public:
     {
         if (handle_ == nullptr)
         {
-            boost::system::error_code ec;
-            assign_ssl_error(handle_.get(), ec);
+            system::error_code ec;
+            ec = {static_cast<int>(::ERR_get_error()),
+                  boost::asio::error::get_ssl_category()};
             boost::throw_exception(system::system_error{ec});
         }
     }
@@ -119,14 +107,30 @@ private:
     std::unique_ptr<::X509_STORE, free> handle_;
 };
 
-std::function<int(bool, boost::asio::ssl::verify_context&)> g_callback;
-
-int
-verify_cb(int preverified, X509_STORE_CTX* ctx)
+class store_ctx_category : public system::error_category
 {
-    boost::asio::ssl::verify_context verify_ctx{ctx};
-    return g_callback(preverified == 1, verify_ctx);
+public:
+    const char* name() const BOOST_ASIO_ERROR_CATEGORY_NOEXCEPT
+    {
+        return "certify.store_ctx";
+    }
+
+    std::string message(int value) const
+    {
+        const char* s = ::X509_verify_cert_error_string(value);
+        return s ? s : "certify.store_ctx error";
+    }
+};
+
+inline system::error_category const&
+get_store_ctx_category()
+{
+    static store_ctx_category const instance;
+    return instance;
 }
+
+extern "C" inline int
+verify_callback(int preverified, X509_STORE_CTX* ctx);
 
 class store_ctx
 {
@@ -139,26 +143,41 @@ public:
         system::error_code ec;
         if (handle_ == nullptr)
         {
-            assign_ssl_error(handle_.get(), ec);
-            boost::throw_exception(boost::system::system_error{ec});
+            ec = {static_cast<int>(::ERR_get_error()),
+                  boost::asio::error::get_ssl_category()};
+            boost::throw_exception(system::system_error{ec});
         }
 
-        assign_ssl_error(
+        auto const ret =
           ::X509_STORE_CTX_init(handle_.get(),
                                 store.native_handle(),
                                 sk_X509_value(chain.native_handle(), 0),
-                                chain.native_handle()),
-          ec);
+                                chain.native_handle());
+        if (ret != 1)
+        {
 
-        if (ec)
-            boost::throw_exception(boost::system::system_error{ec});
+            ec = {static_cast<int>(::ERR_get_error()),
+                  boost::asio::error::get_ssl_category()};
+            boost::throw_exception(system::system_error{ec});
+        }
     }
+
+    store_ctx(store_ctx const&) = delete;
+    store_ctx& operator=(store_ctx const&) = delete;
+
+    store_ctx(store_ctx&&) = delete;
+    store_ctx& operator=(store_ctx&&) = delete;
+
+    ~store_ctx() = default;
 
     template<typename T>
     void set_verify_callback(T&& t)
     {
-        g_callback = std::forward<T>(t);
-        ::X509_STORE_CTX_set_verify_cb(handle_.get(), &verify_cb);
+        callback_ = std::forward<T>(t);
+        ::X509_STORE_CTX_set_verify_cb(handle_.get(), &verify_callback);
+        auto const ret =
+          ::X509_STORE_CTX_set_ex_data(handle_.get(), get_ex_index(), this);
+        assert(ret == 1);
     }
 
     native_handle_type native_handle() const
@@ -168,7 +187,14 @@ public:
 
     void verify(system::error_code& ec)
     {
-        assign_ssl_error(::X509_verify_cert(handle_.get()), ec);
+        auto ret = ::X509_verify_cert(handle_.get());
+        if (ret != 1)
+        {
+            auto err = ::X509_STORE_CTX_get_error(handle_.get());
+            ec = {err, get_store_ctx_category()};
+        }
+        else
+            ec.assign(0, ec.category());
     }
 
     void verify()
@@ -176,10 +202,22 @@ public:
         system::error_code ec;
         verify(ec);
         if (ec)
-            boost::throw_exception(boost::system::system_error{ec});
+            boost::throw_exception(system::system_error{ec});
     }
 
 private:
+    friend int verify_callback(int preverified, X509_STORE_CTX* ctx);
+
+    static int get_ex_index()
+    {
+        static int const index = []() {
+            return ::X509_STORE_CTX_get_ex_new_index(
+              0, nullptr, nullptr, nullptr, nullptr);
+        }();
+
+        return index;
+    }
+
     struct free
     {
         void operator()(native_handle_type h)
@@ -189,14 +227,26 @@ private:
     };
 
     std::unique_ptr<::X509_STORE_CTX, free> handle_;
+    std::function<int(bool, boost::asio::ssl::verify_context&)> callback_;
 };
-} // namespace certify
-} // namespace boost
+
+extern "C" inline int
+verify_callback(int preverified, X509_STORE_CTX* ctx)
+{
+    boost::asio::ssl::verify_context verify_ctx{ctx};
+    void* const p = X509_STORE_CTX_get_ex_data(ctx, store_ctx::get_ex_index());
+    BOOST_ASSERT(p != nullptr);
+    auto& sctx = *static_cast<store_ctx*>(p);
+    return sctx.callback_(preverified == 1, verify_ctx);
+}
 
 void
 verify_chain(boost::filesystem::path const& chain_path,
              boost::certify::certificate_store& store)
 {
+    if (!boost::filesystem::is_regular_file(chain_path))
+        return;
+
     auto cert_chain = boost::certify::certificate_chain::from_file(chain_path);
     boost::certify::store_ctx ctx{cert_chain, store};
 
@@ -204,6 +254,9 @@ verify_chain(boost::filesystem::path const& chain_path,
       boost::certify::rfc2818_verification{chain_path.stem().string()});
     ctx.verify();
 }
+
+} // namespace certify
+} // namespace boost
 
 int
 main()
@@ -215,9 +268,7 @@ main()
     for (auto const& entry : boost::filesystem::directory_iterator{
            "libs/certify/tests/res/chains/"})
     {
-        if (!boost::filesystem::is_regular_file(entry))
-            continue;
-        verify_chain(entry.path(), store);
+        boost::certify::verify_chain(entry.path(), store);
         ++count;
     }
     BOOST_TEST(count > 0);
