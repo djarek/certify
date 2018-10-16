@@ -238,7 +238,7 @@ verify_callback(int preverified, X509_STORE_CTX* ctx)
 
 void
 verify_chain(boost::filesystem::path const& chain_path,
-             boost::certify::certificate_store& store)
+             boost::certify::certificate_store& store, system::error_code& ec)
 {
     if (!boost::filesystem::is_regular_file(chain_path))
         return;
@@ -248,7 +248,7 @@ verify_chain(boost::filesystem::path const& chain_path,
 
     ctx.set_verify_callback(
       boost::certify::rfc2818_verification{chain_path.stem().string()});
-    ctx.verify();
+    ctx.verify(ec);
 }
 
 } // namespace certify
