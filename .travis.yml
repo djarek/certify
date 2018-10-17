@@ -49,6 +49,7 @@ matrix:
 
 
 install:
+  - openssl version
   - cd ..
   - $TRAVIS_BUILD_DIR/tools/get_boost.sh $TRAVIS_BRANCH $TRAVIS_BUILD_DIR
   - cd boost-root
