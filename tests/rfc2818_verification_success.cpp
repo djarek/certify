@@ -6,6 +6,8 @@
 int
 main()
 {
+    ::SSL_library_init();
+
     boost::certify::certificate_store store;
     store.set_default_paths();
 

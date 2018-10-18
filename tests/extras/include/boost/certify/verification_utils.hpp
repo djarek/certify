@@ -37,7 +37,7 @@ public:
         while (1)
         {
             auto* cert =
-              ::PEM_read_bio_X509(file.get(), nullptr, nullptr, nullptr);
+              ::PEM_read_bio_X509_AUX(file.get(), nullptr, nullptr, nullptr);
             if (!cert)
             {
                 ::ERR_clear_error();
@@ -52,7 +52,7 @@ public:
     }
 
 private:
-    struct free
+    struct chain_free
     {
         void operator()(native_handle_type h)
         {
@@ -60,7 +60,7 @@ private:
         }
     };
 
-    std::unique_ptr<STACK_OF(X509), free> handle_;
+    std::unique_ptr<STACK_OF(X509), chain_free> handle_;
 };
 
 class certificate_store
@@ -144,11 +144,9 @@ public:
             boost::throw_exception(system::system_error{ec});
         }
 
-        auto const ret =
-          ::X509_STORE_CTX_init(handle_.get(),
-                                store.native_handle(),
-                                sk_X509_value(chain.native_handle(), 0),
-                                chain.native_handle());
+        X509* const cert = sk_X509_value(chain.native_handle(), 0);
+        auto const ret = ::X509_STORE_CTX_init(
+          handle_.get(), store.native_handle(), cert, chain.native_handle());
         if (ret != 1)
         {
 
@@ -186,7 +184,7 @@ public:
         auto ret = ::X509_verify_cert(handle_.get());
         if (ret != 1)
         {
-            auto err = ::X509_STORE_CTX_get_error(handle_.get());
+            auto const err = ::X509_STORE_CTX_get_error(handle_.get());
             ec = {err, get_store_ctx_category()};
         }
         else
@@ -238,7 +236,8 @@ verify_callback(int preverified, X509_STORE_CTX* ctx)
 
 void
 verify_chain(boost::filesystem::path const& chain_path,
-             boost::certify::certificate_store& store, system::error_code& ec)
+             boost::certify::certificate_store& store,
+             system::error_code& ec)
 {
     if (!boost::filesystem::is_regular_file(chain_path))
         return;
