@@ -13,12 +13,12 @@ main()
 
     int count = 0;
     for (auto const& entry : boost::filesystem::directory_iterator{
-           "libs/certify/tests/res/success_chains/"})
+           "libs/certify/tests/res/fail_chains/"})
     {
         boost::system::error_code ec;
         boost::certify::verify_chain(entry.path(), store, ec);
-        if (ec)
-            BOOST_ERROR((entry.path().string() + ": " + ec.message()).c_str());
+        if (!ec)
+            BOOST_ERROR((entry.path().string() + ": expected failure").c_str());
         ++count;
     }
     BOOST_TEST(count > 0);
