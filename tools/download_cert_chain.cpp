@@ -21,15 +21,15 @@ void
 dump_cert_chain(STACK_OF(X509) * chain, std::string const& file_name)
 {
     auto const chain_num = sk_X509_num(chain);
-    auto const fcloser = [](std::FILE* f) { std::fclose(f); };
-    std::unique_ptr<std::FILE, decltype(fcloser)> file{
-      std::fopen(file_name.c_str(), "wb"), fcloser};
+    auto const bio_free = [](::BIO* b) { ::BIO_free(b); };
+    std::unique_ptr<::BIO, decltype(bio_free)> file{
+      ::BIO_new_file(file_name.c_str(), "wb"), bio_free};
     assert(file != nullptr);
     for (int i = 0; i < chain_num; ++i)
     {
         auto* const cert = sk_X509_value(chain, i);
         assert(cert != nullptr);
-        auto const ret = ::PEM_write_X509(file.get(), cert);
+        auto const ret = ::PEM_write_bio_X509(file.get(), cert);
         assert(ret == 1);
     }
 }
