@@ -3,8 +3,8 @@
 
 #include <boost/certify/detail/config.hpp>
 
-#include <boost/asio/ssl/rfc2818_verification.hpp>
 #include <boost/asio/ssl/verify_context.hpp>
+#include <string>
 
 namespace boost
 {
@@ -34,28 +34,26 @@ namespace boost
 namespace certify
 {
 
-struct rfc2818_verification
+class rfc2818_verification
 {
+public:
     explicit rfc2818_verification(std::string hostname)
-      : verify_{hostname}
-      , hostname_{std::move(hostname)}
+      : hostname_{std::move(hostname)}
     {
     }
 
-    bool operator()(bool preverified, boost::asio::ssl::verify_context& ctx)
-    {
-        if (!preverified && !detail::verify_certificate_chain(ctx, hostname_))
-        {
-            return false;
-        }
+    inline bool operator()(bool preverified,
+                           boost::asio::ssl::verify_context& ctx);
 
-        return verify_(true, ctx);
-    }
-
-    boost::asio::ssl::rfc2818_verification verify_;
+private:
+    static inline bool match_pattern(const char* pattern,
+                                     std::size_t pattern_length,
+                                     const char* host);
     std::string hostname_;
 };
 
 } // namespace certify
 } // namespace boost
+
+#include <boost/certify/impl/rfc2818_verification.ipp>
 #endif // BOOST_CERTIFY_RFC_2818_VERIFICATION_HPP
