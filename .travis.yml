@@ -21,14 +21,14 @@ matrix:
       compiler: g++-5
       env:
         - BOOST_TOOLSET=gcc-5
-      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/ libs/certify/examples
 
     # Default clang++
     - os: linux
       compiler: clang++
       env:
         - BOOST_TOOLSET=clang
-      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/
+      script: ./b2 cxxstd=11 toolset=$BOOST_TOOLSET libs/certify/tests libs/certify/tools/ libs/certify/examples
 
     # GCC 6.0, Debug + Coverage
     - os: linux
@@ -43,7 +43,7 @@ matrix:
           sources:
             - *base_sources
       script:
-        - ./b2 variant=debug cxxstd=11 toolset=$BOOST_TOOLSET linkflags="-fprofile-arcs" cxxflags="-fprofile-arcs -ftest-coverage" libs/certify/tests libs/certify/tools/
+        - ./b2 variant=debug cxxstd=11 toolset=$BOOST_TOOLSET linkflags="-fprofile-arcs" cxxflags="-fprofile-arcs -ftest-coverage" libs/certify/tests libs/certify/tools/ libs/certify/examples
         - ./libs/certify/tools/coverage.sh
         - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f bin.v2/coverage.info -y ./.codecov.yml
 
