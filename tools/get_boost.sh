@@ -1,6 +1,6 @@
 #! /bin/sh
 
-build_dir=$(readlink -f $2)
+build_dir=$2
 
 branch="master"
 if [ $1 == "master" ]; then
@@ -14,6 +14,7 @@ git submodule update --init libs/array
 git submodule update --init libs/asio
 git submodule update --init libs/assert
 git submodule update --init libs/beast
+git submodule update --init tools/boost_install
 git submodule update --init libs/bind
 git submodule update --init libs/chrono
 git submodule update --init libs/concept_check
@@ -32,6 +33,7 @@ git submodule update --init libs/lexical_cast
 git submodule update --init libs/math
 git submodule update --init libs/move
 git submodule update --init libs/mpl
+git submodule update --init libs/mp11
 git submodule update --init libs/numeric
 git submodule update --init libs/optional
 git submodule update --init libs/predef

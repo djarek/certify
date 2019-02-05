@@ -47,9 +47,25 @@ matrix:
         - ./libs/certify/tools/coverage.sh
         - curl -s https://codecov.io/bash -o codecov && bash ./codecov -X gcov -f bin.v2/coverage.info -y ./.codecov.yml
 
+    # OS X Clang, C++14, Debug
+    - os: osx
+      compiler: clang++
+      before_install:
+        - git clone https://github.com/openssl/openssl.git
+        - cd openssl
+        - export OPENSSL_ROOT=~/openssl-prefix
+        - mkdir -p $OPENSSL_ROOT
+        - ./config --prefix=$OPENSSL_ROOT
+        - make
+        - make install > /dev/null
+        - cd ..
+        - rm -rf openssl
+        - cp tools/user-config.jam ~/
+        - alias readlink=greadlink
+      script:
+        - ./b2 variant=debug cxxstd=14 toolset=clang libs/certify/tests libs/certify/tools/ libs/certify/examples
 
 install:
-  - openssl version
   - cd ..
   - $TRAVIS_BUILD_DIR/tools/get_boost.sh $TRAVIS_BRANCH $TRAVIS_BUILD_DIR
   - cd boost-root

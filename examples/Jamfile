@@ -35,6 +35,8 @@ project /boost/certify/examples
     <target-os>hpux,<toolset>gcc:<define>_XOPEN_SOURCE_EXTENDED
     <target-os>hpux:<library>ipv6
     <target-os>haiku:<library>network
+    <target-os>darwin:<linkflags>"-framework CoreFoundation"
+    <target-os>darwin:<linkflags>"-framework Security"
   ;
 
 

@@ -1,5 +1,5 @@
-#ifndef NETU_TLS_DETAIL_KEYSTORE_WINDOWS
-#define NETU_TLS_DETAIL_KEYSTORE_WINDOWS
+#ifndef BOOST_CERTIFY_TLS_DETAIL_KEYSTORE_WINDOWS
+#define BOOST_CERTIFY_TLS_DETAIL_KEYSTORE_WINDOWS
 
 #include <boost/asio/ssl/rfc2818_verification.hpp>
 #include <boost/asio/ssl/verify_context.hpp>
@@ -119,4 +119,4 @@ verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
 } // namespace certify
 } // namespace boost
 
-#endif // BOOST_CERTIFY_DETAIL_KEYSTORE_WINDOWS
+#endif // BOOST_CERTIFY_TLS_DETAIL_KEYSTORE_WINDOWS

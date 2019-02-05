@@ -17,13 +17,15 @@ bool
 verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
                          std::string const& hostname);
 
-} // namespace tls
 } // namespace detail
-} // namespace netu
+} // namespace certify
+} // namespace boost
 
 #if BOOST_CERTIFY_USE_NATIVE_CERTIFICATE_STORE
 #if BOOST_WINDOWS
 #include <boost/certify/detail/keystore_windows.hpp>
+#elif __APPLE__
+#include <boost/certify/detail/keystore_apple.hpp>
 #else
 #include <boost/certify/detail/keystore_default.hpp>
 #endif
