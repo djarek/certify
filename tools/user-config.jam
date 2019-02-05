@@ -1,9 +1,10 @@
 import os ;
-using msvc ;
+
 local OPENSSL_ROOT = [ os.environ OPENSSL_ROOT ] ;
 project
   : requirements
     <include>$(OPENSSL_ROOT)/include
-    <variant>debug:<library-path>$(OPENSSL_ROOT)/debug/lib
+    <variant>debug:<library-path>$(OPENSSL_ROOT)/lib
+    <target-os>windows<variant>debug:<library-path>$(OPENSSL_ROOT)/debug/lib
     <variant>release:<library-path>$(OPENSSL_ROOT)/lib
   ;

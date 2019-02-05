@@ -14,6 +14,9 @@ lib crypto ;
 lib ssl : : <target-os>windows <name>ssleay32 ;
 lib crypto : : <target-os>windows <name>libeay32 ;
 
+lib CoreFoundation ;
+lib Security ;
+
 project /boost/certify/tests
   : requirements
     <library>/boost/date_time//boost_date_time
@@ -38,6 +41,8 @@ project /boost/certify/tests
     <target-os>hpux,<toolset>gcc:<define>_XOPEN_SOURCE_EXTENDED
     <target-os>hpux:<library>ipv6
     <target-os>haiku:<library>network
+    <target-os>darwin:<linkflags>"-framework CoreFoundation"
+    <target-os>darwin:<linkflags>"-framework Security"
   ;
 
 
