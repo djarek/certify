@@ -112,6 +112,12 @@ rfc2818_verification::operator()(bool preverified,
     return false;
 }
 
+inline std::string const&
+rfc2818_verification::hostname() const
+{
+    return hostname_;
+}
+
 inline bool
 rfc2818_verification::match_pattern(char const* pattern,
                                     std::size_t pattern_length,

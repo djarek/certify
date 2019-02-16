@@ -47,6 +47,8 @@ public:
     inline bool operator()(bool preverified,
                            boost::asio::ssl::verify_context& ctx);
 
+    inline std::string const& hostname() const;
+
 private:
     static inline bool match_pattern(const char* pattern,
                                      std::size_t pattern_length,

@@ -47,6 +47,7 @@ project /boost/certify/tests
 
 
 test-suite "certify" :
+  [ run extensions.cpp ]
   [ run rfc2818_verification_success.cpp ]
   [ run rfc2818_verification_fail.cpp ]
   ;
