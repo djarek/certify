@@ -8,6 +8,7 @@
 #include <boost/beast/http/write.hpp>
 
 #include <boost/certify/rfc2818_verification.hpp>
+#include <boost/certify/extensions.hpp>
 
 #include <iostream>
 
@@ -40,7 +41,7 @@ connect(asio::io_context& ctx,
     auto stream = boost::make_unique<ssl::stream<tcp::socket>>(
       connect(ctx, hostname), ssl_ctx);
     stream->set_verify_callback(boost::certify::rfc2818_verification{hostname});
-    ::SSL_set_tlsext_host_name(stream->native_handle(), hostname.c_str());
+    boost::certify::sni_hostname(*stream, hostname);
     stream->handshake(ssl::stream_base::handshake_type::client);
     return stream;
 }
