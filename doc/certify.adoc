@@ -1,0 +1,28 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= Certify: platform-specific OpenSSL keystore abstraction
+Damian Jarek
+:toc: left
+:toclevels: 3
+:idprefix:
+:listing-caption: Code Example
+:table-caption: Illustration
+:docinfo: private-footer
+:source-highlighter: coderay
+
+:leveloffset: +1
+
+include::certify/overview.adoc[]
+
+include::certify/tls_primer.adoc[]
+
+include::certify/reference.adoc[]
+
+:leveloffset: -1
