@@ -1,0 +1,43 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= TLS primer
+
+TLS (Transport Layer Security, specified in
+https://tools.ietf.org/html/rfc8447[RFC8447]) is a network protocol which provides
+confidentiality and authentication between peers of a network connection. TLS sessions are
+represented by instances of the `boost::asio::ssl::stream<NextLayer>` class template.
+TLS connections share a number of configuration variables and state, which are
+stored in a `boost::asio::ssl::context`. It is safe to use a
+`boost::asio::ssl::context` context for multiple connections that run in
+parallel on different threads, however accessing the context directly may result
+in data races or race conditions.
+
+A TLS session lasts between the initial handshake and shutdown. A handshake is a
+bidirectional exchange of configuration information and credentials, during
+which both peers agree on protocol configuration such as version or cipher. Both
+handshake and shutdown are initiated by the client. If peers cannot agree on a
+common set of configuration values or authentication fails, the entire handshake
+operation will fail. In typical use cases, the client authenticates the server
+based on their https://en.wikipedia.org/wiki/X.509[X.509 certificate], by
+verifying it with the use of public certificates of trusted organizations, known
+as https://en.wikipedia.org/wiki/Certificate_authority[certificate authorities].
+In order to verify a peer's certificate, the implementation retrieves (one or
+more) public certificates from its key store. If verification of a certificate
+chain fails, the chain will be considered to be
+https://en.wikipedia.org/wiki/Self-signed_certificate[self-signed] and the user
+is presented with an option to either continue the handshake or discontinue with
+an error. The verification procedure of a certificate chain presented by an
+HTTPS peer is specified in https://tools.ietf.org/html/rfc2818[RFC2818].
+
+A client that wants to indicate to the server that a session is to be terminated
+in a clean way, it performs a shutdown operation. Some servers optimize this
+step out, when they can determine ahead of time that a peer will no longer send
+any requests and close the connection without waiting for a shutdown to
+complete.

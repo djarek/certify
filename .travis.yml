@@ -7,6 +7,10 @@ addons:
     sources: &base_sources
       - ubuntu-toolchain-r-test
 
+env:
+  secure: ArhvhRy+jKtJRZPTgXRp9pexszSgyRbkl1N27C6a+admZWfujttZekivsacnuoc4FLOS6oS0Su6bam6ggw0Tsplli7bVUDvOWHu5+Z8yK64I5lRTRPlbJq/2Q5FxSjSL9cpRyzP+yuZTLEwMMn3nf7euho5do7Yq07SDglZ06VnS+t9eRFyQav8yE7tGQhE0uCRqFReE4mxNoj/STNwho9wHqvBjFzIQIzPF2eyxUHBD829fNd5VzJKAoUBvZ16LymHCqfcnZixdN8ugS7QnDr49qlEwdJoyfPWNK+fVmLeGNSBtwsMUYKbxfbdNaLEhZOC9q69jNgAbfboc/vThkUBcAlwOIaXPwp0ZoTXTf2ADDiwO1Iz49TMUOOYqJwHuLkcRDFK7yqrGqpEV6D1R8da6faNsmCO2xOiTNkS59pXujLIskBBkToI8dRBe/i3khtxdWr1ACPn368LhpIt8am/eXOzjaYWH50ifFQtwsV6y1ABVtHL22BuQMUtWiLUft9amGo61M1kDEF8yvJLyE2Ss5xaAYuDgIGjMfvwisN0hX95aMXamgWvFDIEIwSMBdkZPMmJpO8dkX6GAH9XhbCkw9FWe9KwSKsAVnxYxyMsnsF8ZWMrizKc5l495b9xJ/RJdPw5S2iI2utetPa0lNko9skYlNIzNKBwCTjyi5Jk=
+
+
 matrix:
   include:
     # g++5
@@ -70,3 +74,6 @@ install:
   - $TRAVIS_BUILD_DIR/tools/get_boost.sh $TRAVIS_BRANCH $TRAVIS_BUILD_DIR
   - cd boost-root
   - ./bootstrap.sh
+
+after_success:
+- ./libs/certify/build_docs.sh

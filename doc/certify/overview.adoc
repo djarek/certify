@@ -1,0 +1,22 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= Overview
+
+Certify is a C++11, header only library, which provides an abstraction of
+platform-specific operations, such as using X.509 certificates from the
+Operating System's keystore to perform peer authentication during a TLS
+handshake. This library is intended for use with Boost.ASIO's SSL components.
+Users of this library are assumed to have at least a basic understanding of the
+implementation of the Networking TS in Boost.ASIO. Beginners are recommended to
+start with the ASIO tutorial in Boost.Beast documentation to be able to follow
+examples in this library.
+
+*Note: Certify is not yet part of Boost.*
+

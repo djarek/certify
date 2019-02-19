@@ -1,0 +1,20 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+# Reference
+
+The contents of the library are in namespace boost::certify.
+
+:leveloffset: +1
+
+include::reference/rfc2818_verification.adoc[]
+
+include::reference/extensions.adoc[]
+
+:leveloffset: -1
