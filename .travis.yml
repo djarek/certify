@@ -39,6 +39,7 @@ matrix:
       compiler: g++-6
       env:
         - BOOST_TOOLSET=gcc-6
+        - BUILD_DOCS=true
       addons:
         apt:
           packages:
@@ -76,4 +77,4 @@ install:
   - ./bootstrap.sh
 
 after_success:
-- ./libs/certify/build_docs.sh
+- ./libs/certify/tools/build_docs.sh
