@@ -36,7 +36,7 @@ rfc2818_verification::operator()(bool preverified,
 
     X509* cert = X509_STORE_CTX_get_current_cert(ctx.native_handle());
 
-    auto constexpr gn_free = [](GENERAL_NAMES* p) { GENERAL_NAMES_free(p); };
+    auto const gn_free = [](GENERAL_NAMES* p) { GENERAL_NAMES_free(p); };
 
     // Go through the alternate names in the certificate looking for matching
     // DNS or IP address entries.
