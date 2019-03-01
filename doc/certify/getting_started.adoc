@@ -1,0 +1,89 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= Getting started
+
+Certify is header-only, so no build step is required to use it.
+
+== Requirements
+- C++11
+- Boost (mostly Boost.ASIO)
+- OpenSSL (OpenSSL 1.0.2 or higher)
+
+== Building tests and examples
+Before building, you need to clone/copy Certify into the `libs/` subdirectory and bootstrap the `b2` build tool:
+[source, bash]
+----
+cd boost
+cd libs/
+git clone https://github.com/djarek/certify.git
+cd ..
+./b2 libs/certify/test libs/certify/examples
+----
+
+Tests and examples can be built using the following command:
+
+[source, bash]
+----
+cd boost
+./b2 libs/certify/test libs/certify/examples
+----
+
+For more information about additional flags and configuration steps see the
+https://github.com/boostorg/boost/wiki[Boost Wiki].
+
+Building tests and examples requires OpenSSL installed. If OpenSSL is installed
+in a non-system location, you will need to copy the user-config.jam file into
+your home directory and set the OPENSSL_ROOT environment variable to the path
+that contains an installation of OpenSSL.
+
+- Ubuntu/Debian
+
+If installed into a system directory, OpenSSL will be automatically found and used.
+
+[source, bash]
+----
+sudo apt install libssl-dev
+----
+- Windows
+
+Replace `path` in the following code snippets with the path you installed
+vcpkg to. Examples assume a 32-bit build, if you build a 64-bit version replace
+`x32-windows` with `x64-windows` in the path.
+
+Using vcpkg and CMD:
+[source, bat]
+----
+vcpkg install openssl --triplet x32-windows
+SET OPENSSL_ROOT=path\installed\x32-windows
+----
+
+
+Using vcpkg and PowerShell:
+[source, powershell]
+----
+vcpkg install openssl --triplet x32-windows
+$env:OPENSSL_ROOT = "path\x32-windows"
+----
+
+Using vcpkg and bash:
+[source, bash]
+----
+vcpkg.exe install openssl --triplet x32-windows
+export OPENSSL_ROOT=path/x32-windows
+----
+
+- MacOS
+
+Using brew:
+[source, bash]
+----
+brew install openssl
+export OPENSSL_ROOT=$(brew --prefix openssl)
+----

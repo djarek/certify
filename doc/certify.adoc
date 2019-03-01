@@ -21,6 +21,8 @@ Damian Jarek
 
 include::certify/overview.adoc[]
 
+include::certify/getting_started.adoc[]
+
 include::certify/tls_primer.adoc[]
 
 include::certify/reference.adoc[]
