@@ -2,10 +2,6 @@ image: Visual Studio 2017
 
 shallow_clone: true
 
-configuration:
-  - Debug
-  - Release
-
 platform:
   - x86
   - x64
@@ -16,7 +12,6 @@ environment:
 install:
   - ps: $triplet = "$($env:PLATFORM)-windows"
   - ps: $env:OPENSSL_ROOT = "C:\tools\vcpkg\installed\$($triplet)"
-  - ps: $configuration = $env:CONFIGURATION.ToLower()
   - ps: vcpkg install openssl --triplet $triplet
   - ps: cp tools\user-config.jam ~\user-config.jam
   - cd ..
@@ -28,8 +23,8 @@ build: off
 
 test_script:
   - ps: if ($env:PLATFORM -eq "x86") { $addr_model = "32" } else { $addr_model = "64" }
-  - ps: .\b2.exe variant=$configuration toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tests libs\certify\examples
-  - ps: .\b2.exe variant=$configuration toolset=msvc cxxstd=11 address-model=$addr_model libs\certify\tools
+  - ps: .\b2.exe variant=debug,release toolset=msvc cxxstd=11,14,17 address-model=$addr_model libs\certify\tests libs\certify\examples
+  - ps: .\b2.exe variant=debug,release toolset=msvc cxxstd=11,14,17 address-model=$addr_model libs\certify\tools
 
 cache:
   - c:\tools\vcpkg\installed\
