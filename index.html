@@ -520,6 +520,12 @@ table.CodeRay td.code>pre{padding:0}
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#overview">Overview</a></li>
+<li><a href="#getting_started">Getting started</a>
+<ul class="sectlevel2">
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#building_tests_and_examples">Building tests and examples</a></li>
+</ul>
+</li>
 <li><a href="#tls_primer">TLS primer</a></li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel2">
@@ -550,6 +556,134 @@ examples in this library.</p>
 </div>
 <div class="paragraph">
 <p><strong>Note: Certify is not yet part of Boost.</strong></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="getting_started">Getting started</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Certify is header-only, so no build step is required to use it.</p>
+</div>
+<div class="sect2">
+<h3 id="requirements">Requirements</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>C++11</p>
+</li>
+<li>
+<p>Boost (mostly Boost.ASIO)</p>
+</li>
+<li>
+<p>OpenSSL (OpenSSL 1.0.2 or higher)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="building_tests_and_examples">Building tests and examples</h3>
+<div class="paragraph">
+<p>Before building, you need to clone/copy Certify into the <code>libs/</code> subdirectory and bootstrap the <code>b2</code> build tool:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">cd boost
+cd libs/
+git clone https://github.com/djarek/certify.git
+cd ..
+./b2 libs/certify/test libs/certify/examples</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Tests and examples can be built using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">cd boost
+./b2 libs/certify/test libs/certify/examples</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For more information about additional flags and configuration steps see the
+<a href="https://github.com/boostorg/boost/wiki">Boost Wiki</a>.</p>
+</div>
+<div class="paragraph">
+<p>Building tests and examples requires OpenSSL installed. If OpenSSL is installed
+in a non-system location, you will need to copy the user-config.jam file into
+your home directory and set the OPENSSL_ROOT environment variable to the path
+that contains an installation of OpenSSL.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Ubuntu/Debian</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If installed into a system directory, OpenSSL will be automatically found and used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">sudo apt install libssl-dev</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Windows</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Replace <code>path</code> in the following code snippets with the path you installed
+vcpkg to. Examples assume a 32-bit build, if you build a 64-bit version replace
+<code>x32-windows</code> with <code>x64-windows</code> in the path.</p>
+</div>
+<div class="paragraph">
+<p>Using vcpkg and CMD:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bat">vcpkg install openssl --triplet x32-windows
+SET OPENSSL_ROOT=path\installed\x32-windows</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using vcpkg and PowerShell:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="powershell">vcpkg install openssl --triplet x32-windows
+$env:OPENSSL_ROOT = &quot;path\x32-windows&quot;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Using vcpkg and bash:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">vcpkg.exe install openssl --triplet x32-windows
+export OPENSSL_ROOT=path/x32-windows</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>MacOS</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Using brew:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">brew install openssl
+export OPENSSL_ROOT=$(brew --prefix openssl)</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -638,7 +772,7 @@ as specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-22 19:29:10 CET
+Last updated 2019-03-02 01:22:26 CET
 </div>
 </div>
 </body>
