@@ -9,16 +9,6 @@ http://www.boost.org/LICENSE_1_0.txt
 
 = HTTPS verification, `<boost/certify/rfc2818_verification.hpp>`
 
-
-The `rfc2818_verification` class implements a callback that server
-authentication during a TLS handshake. Certificate verification is first
-performed using CA certificates imported into OpenSSL. If that fails because of
-missing CA certificates, the library will utilize platform specific APIs to try
-and complete the process. If verification passes and the peer's certificate
-chain is authentic, this callback will continue with the verification process,
-as specified in https://tools.ietf.org/html/rfc2818[RFC2818].
-
-
 [source, c++]
 ----
 class rfc2818_verification
@@ -32,3 +22,21 @@ public:
     std::string const& hostname() const;
 };
 ----
+
+The `rfc2818_verification` class implements a callback that performs server
+authentication during a TLS handshake. Certificate verification is first
+performed using CA certificates imported into OpenSSL. If that fails because of
+missing CA certificates, the library will utilize platform specific APIs to try
+and complete the process. If verification passes and the peer's certificate
+chain is authentic, this callback will continue with the verification process,
+as specified in https://tools.ietf.org/html/rfc2818[RFC2818].
+
+Example usage:
+[source, c++]
+----
+boost::asio::ssl::stream<boost::asio::tcp::socket> stream{/*...*/};
+stream.set_verify_callback(boost::certify::rfc2818_verification{"github.com"});
+----
+
+If verification, using the platform-specific API, fails, the handshake operation
+will fail with an error indicating that the certificate chain was self-signed.

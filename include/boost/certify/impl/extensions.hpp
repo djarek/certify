@@ -8,21 +8,21 @@ namespace boost
 namespace certify
 {
 
-template<class AsyncReadStream>
+template<class AsyncStream>
 string_view
-sni_hostname(asio::ssl::stream<AsyncReadStream> const& stream)
+sni_hostname(asio::ssl::stream<AsyncStream> const& stream)
 {
     auto handle =
-      const_cast<asio::ssl::stream<AsyncReadStream>&>(stream).native_handle();
+      const_cast<asio::ssl::stream<AsyncStream>&>(stream).native_handle();
     auto* hostname = SSL_get_servername(handle, TLSEXT_NAMETYPE_host_name);
     if (hostname == nullptr)
         return string_view{};
     return {hostname};
 }
 
-template<class AsyncReadStream>
+template<class AsyncStream>
 void
-sni_hostname(asio::ssl::stream<AsyncReadStream>& stream,
+sni_hostname(asio::ssl::stream<AsyncStream>& stream,
              std::string const& hostname,
              system::error_code& ec)
 {
@@ -35,9 +35,9 @@ sni_hostname(asio::ssl::stream<AsyncReadStream>& stream,
         ec = {};
 }
 
-template<class AsyncReadStream>
+template<class AsyncStream>
 void
-sni_hostname(asio::ssl::stream<AsyncReadStream>& stream,
+sni_hostname(asio::ssl::stream<AsyncStream>& stream,
              std::string const& hostname)
 {
     system::error_code ec;
