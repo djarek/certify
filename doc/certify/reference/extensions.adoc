@@ -9,4 +9,44 @@ http://www.boost.org/LICENSE_1_0.txt
 
 = TLS extensions, `<boost/certify/extensions.hpp>`
 
+This file contains extensions to the implementation of `asio::ssl`.
+
 == TLS-SNI
+https://en.wikipedia.org/wiki/Server_Name_Indication[TLS-SNI] is an extension
+that enables a client to indicate to a server which hostname it is trying to
+connect to. Some servers require this an SNI hostname to be sent in a TLS
+handshake, because multiple hostnames may be served by the same public-facing
+IP, without requiring all those sites to use the same certificate.
+
+[source, c++]
+----
+template<class AsyncStream>
+boost::string_view
+sni_hostname(boost::asio::asio::ssl::stream<AsyncStream> const& stream);
+----
+
+Returns the SNI hostname set on the provided stream or a default
+constructed `string_view` if none was set.
+
+[source, c++]
+----
+template<class AsyncStream>
+void
+sni_hostname(boost::asio::asio::ssl::stream<AsyncStream>& stream,
+             std::string const& hostname,
+             boost::system::error_code& ec);
+----
+
+Sets the provided SNI hostname on the provided stream. On success, `ec` is
+cleared, on error it will contain an error.
+
+[source, c++]
+----
+template<class AsyncStream>
+void
+sni_hostname(asio::ssl::stream<AsyncStream>& stream,
+             std::string const& hostname);
+----
+
+Sets the provided SNI hostname on the provided stream. On error a
+`boost::system::system_error` is thrown.

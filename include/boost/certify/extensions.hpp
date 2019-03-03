@@ -11,15 +11,20 @@ namespace boost
 namespace certify
 {
 
-template<class AsyncReadStream>
+template<class AsyncStream>
 string_view
-sni_hostname(asio::ssl::stream<AsyncReadStream> const& stream);
+sni_hostname(asio::ssl::stream<AsyncStream> const& stream);
 
-template<class AsyncReadStream>
+template<class AsyncStream>
 void
-sni_hostname(asio::ssl::stream<AsyncReadStream>& stream,
+sni_hostname(asio::ssl::stream<AsyncStream>& stream,
              std::string const& hostname,
              system::error_code& ec);
+
+template<class AsyncStream>
+void
+sni_hostname(asio::ssl::stream<AsyncStream>& stream,
+             std::string const& hostname);
 
 } // namespace certify
 } // namespace boost
