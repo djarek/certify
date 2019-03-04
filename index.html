@@ -736,15 +736,6 @@ complete.</p>
 </div>
 <div class="sect2">
 <h3 id="https_verification_code_boost_certify_rfc2818_verification_hpp_code">HTTPS verification, <code>&lt;boost/certify/rfc2818_verification.hpp&gt;</code></h3>
-<div class="paragraph">
-<p>The <code>rfc2818_verification</code> class implements a callback that server
-authentication during a TLS handshake. Certificate verification is first
-performed using CA certificates imported into OpenSSL. If that fails because of
-missing CA certificates, the library will utilize platform specific APIs to try
-and complete the process. If verification passes and the peer&#8217;s certificate
-chain is authentic, this callback will continue with the verification process,
-as specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
-</div>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">class</span> <span class="class">rfc2818_verification</span>
@@ -759,12 +750,79 @@ as specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
 };</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The <code>rfc2818_verification</code> class implements a callback that performs server
+authentication during a TLS handshake. Certificate verification is first
+performed using CA certificates imported into OpenSSL. If that fails because of
+missing CA certificates, the library will utilize platform specific APIs to try
+and complete the process. If verification passes and the peer&#8217;s certificate
+chain is authentic, this callback will continue with the verification process,
+as specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
+</div>
+<div class="paragraph">
+<p>Example usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++">boost::asio::ssl::stream&lt;boost::asio::tcp::socket&gt; stream{<span class="comment">/*...*/</span>};
+stream.set_verify_callback(boost::certify::rfc2818_verification{<span class="string"><span class="delimiter">&quot;</span><span class="content">github.com</span><span class="delimiter">&quot;</span></span>});</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If verification, using the platform-specific API, fails, the handshake operation
+will fail with an error indicating that the certificate chain was self-signed.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="tls_extensions_code_boost_certify_extensions_hpp_code">TLS extensions, <code>&lt;boost/certify/extensions.hpp&gt;</code></h3>
+<div class="paragraph">
+<p>This file contains extensions to the implementation of <code>asio::ssl</code>.</p>
+</div>
 <div class="sect3">
 <h4 id="tls_sni">TLS-SNI</h4>
-
+<div class="paragraph">
+<p><a href="https://en.wikipedia.org/wiki/Server_Name_Indication">TLS-SNI</a> is an extension
+that enables a client to indicate to a server which hostname it is trying to
+connect to. Some servers require this an SNI hostname to be sent in a TLS
+handshake, because multiple hostnames may be served by the same public-facing
+IP, without requiring all those sites to use the same certificate.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">AsyncStream</span>&gt;
+boost::string_view
+sni_hostname(boost::asio::asio::ssl::stream&lt;AsyncStream&gt; <span class="directive">const</span>&amp; stream);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Returns the SNI hostname set on the provided stream or a default
+constructed <code>string_view</code> if none was set.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">AsyncStream</span>&gt;
+<span class="directive">void</span>
+sni_hostname(boost::asio::asio::ssl::stream&lt;AsyncStream&gt;&amp; stream,
+             std::<span class="predefined-type">string</span> <span class="directive">const</span>&amp; hostname,
+             boost::system::error_code&amp; ec);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the provided SNI hostname on the provided stream. On success, <code>ec</code> is
+cleared, on error it will contain an error.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">AsyncStream</span>&gt;
+<span class="directive">void</span>
+sni_hostname(asio::ssl::stream&lt;AsyncStream&gt;&amp; stream,
+             std::<span class="predefined-type">string</span> <span class="directive">const</span>&amp; hostname);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the provided SNI hostname on the provided stream. On error a
+<code>boost::system::system_error</code> is thrown.</p>
+</div>
 </div>
 </div>
 </div>
@@ -772,7 +830,7 @@ as specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-02 01:22:26 CET
+Last updated 2019-03-03 17:02:19 CET
 </div>
 </div>
 </body>
