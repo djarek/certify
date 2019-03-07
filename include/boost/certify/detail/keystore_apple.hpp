@@ -48,6 +48,26 @@ dump_cert(X509* cert, std::vector<unsigned char>& buffer)
     return true;
 }
 
+struct certs_vec
+{
+    certs_vec() = default;
+
+    certs_vec(certs_vec const&) = delete;
+    certs_vec(certs_vec&&) = delete;
+
+    certs_vec& operator=(certs_vec&&) = delete;
+    certs_vec& operator=(certs_vec const&) = delete;
+
+    ~certs_vec()
+    {
+        for (auto ref : vec_)
+            if (ref != nullptr)
+                CFRelease(ref);
+    }
+
+    std::vector<void const*> vec_;
+};
+
 inline bool
 verify_certificate_chain(::X509_STORE_CTX* ctx)
 {
@@ -56,7 +76,7 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
     if (cert_count <= 0)
         return false;
 
-    std::vector<cf_ptr<SecCertificateRef>> cf_certs;
+    certs_vec cf_certs;
     std::vector<unsigned char> buffer;
     for (int i = 0; i < cert_count; ++i)
     {
@@ -69,14 +89,15 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
         if (ref == nullptr)
             return false;
 
-        cf_certs.emplace_back(SecCertificateCreateWithData(nullptr, ref.get()));
-        if (cf_certs.back() == nullptr)
+        cf_certs.vec_.push_back(nullptr);
+        cf_certs.vec_.back() = SecCertificateCreateWithData(nullptr, ref.get());
+        if (cf_certs.vec_.back() == nullptr)
             return false;
     }
 
     cf_ptr<CFArrayRef> cert_array{[&]() {
-        auto* p = reinterpret_cast<void const**>(cf_certs.data());
-        return CFArrayCreate(nullptr, p, cf_certs.size(), nullptr);
+        auto* p = cf_certs.vec_.data();
+        return CFArrayCreate(nullptr, p, cf_certs.vec_.size(), nullptr);
     }()};
     if (cert_array == nullptr)
         return false;
