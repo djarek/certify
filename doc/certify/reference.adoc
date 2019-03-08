@@ -13,7 +13,7 @@ The contents of the library are in namespace boost::certify.
 
 :leveloffset: +1
 
-include::reference/rfc2818_verification.adoc[]
+include::reference/https_verification.adoc[]
 
 include::reference/extensions.adoc[]
 

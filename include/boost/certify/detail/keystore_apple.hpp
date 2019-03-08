@@ -49,10 +49,9 @@ dump_cert(X509* cert, std::vector<unsigned char>& buffer)
 }
 
 inline bool
-verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
-                         std::string const& hostname)
+verify_certificate_chain(::X509_STORE_CTX* ctx)
 {
-    auto* const chain = ::X509_STORE_CTX_get_chain(ctx.native_handle());
+    auto* const chain = ::X509_STORE_CTX_get_chain(ctx);
     auto const cert_count = sk_X509_num(chain);
     if (cert_count <= 0)
         return false;
@@ -82,13 +81,9 @@ verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
     if (cert_array == nullptr)
         return false;
 
-    cf_ptr<CFStringRef> cf_hostname{CFStringCreateWithCStringNoCopy(
-      nullptr, hostname.c_str(), kCFStringEncodingASCII, kCFAllocatorNull)};
-
-    if (cf_hostname == nullptr)
-        return false;
-
-    cf_ptr<SecPolicyRef> policy{SecPolicyCreateSSL(true, cf_hostname.get())};
+    // No need to pass hostname in - it's already verified by OpenSSL at this
+    // point.
+    cf_ptr<SecPolicyRef> policy{SecPolicyCreateSSL(true, /*hostname*/ nullptr)};
 
     OSStatus status;
     auto trust = [&]() -> cf_ptr<SecTrustRef> {

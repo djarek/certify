@@ -15,6 +15,7 @@ matrix:
   include:
     # g++5
     - os: linux
+      dist: xenial
       addons:
         apt:
           packages:
@@ -29,6 +30,7 @@ matrix:
 
     # Default clang++
     - os: linux
+      dist: xenial
       compiler: clang++
       env:
         - BOOST_TOOLSET=clang
@@ -36,6 +38,7 @@ matrix:
 
     # GCC 6.0, Debug + Coverage
     - os: linux
+      dist: xenial
       compiler: g++-6
       env:
         - BOOST_TOOLSET=gcc-6

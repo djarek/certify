@@ -1,4 +1,4 @@
-#include <boost/certify/rfc2818_verification.hpp>
+#include <boost/certify/https_verification.hpp>
 
 #include <boost/certify/verification_utils.hpp>
 #include <boost/core/lightweight_test.hpp>

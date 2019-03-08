@@ -1,8 +1,8 @@
 #ifndef BOOST_CERTIFY_DETAIL_KEYSTORE_DEFAULT
 #define BOOST_CERTIFY_DETAIL_KEYSTORE_DEFAULT
 
-#include <boost/asio/ssl/rfc2818_verification.hpp>
-#include <boost/asio/ssl/verify_context.hpp>
+#include <openssl/x509_vfy.h>
+#include <string>
 
 namespace boost
 {
@@ -12,8 +12,7 @@ namespace detail
 {
 
 inline bool
-verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
-                         std::string const& hostname)
+verify_certificate_chain(::X509_STORE_CTX*)
 {
     return false;
 }
