@@ -1,7 +1,6 @@
 #ifndef BOOST_CERTIFY_TLS_DETAIL_KEYSTORE_WINDOWS
 #define BOOST_CERTIFY_TLS_DETAIL_KEYSTORE_WINDOWS
 
-#include <boost/asio/ssl/rfc2818_verification.hpp>
 #include <boost/asio/ssl/verify_context.hpp>
 #include <boost/make_unique.hpp>
 
@@ -54,10 +53,9 @@ get_cert_chain_context(::CERT_CONTEXT const* cert_ctx, CERT_CHAIN_PARA* params)
 }
 
 inline bool
-verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
-                         std::string const& hostname)
+verify_certificate_chain(::X509_STORE_CTX* ctx)
 {
-    auto* const chain = ::X509_STORE_CTX_get_chain(ctx.native_handle());
+    auto* const chain = ::X509_STORE_CTX_get_chain(ctx);
     if (sk_X509_num(chain) <= 0)
         return false;
 
@@ -95,14 +93,11 @@ verify_certificate_chain(boost::asio::ssl::verify_context& ctx,
         cert_chain_context->TrustStatus.dwErrorStatus != CERT_TRUST_NO_ERROR)
         return false;
 
-    std::wstringstream wstr;
-    wstr << hostname.c_str();
-    auto utf16_hostname = wstr.str();
     ::HTTPSPolicyCallbackData policyData = {
       {sizeof(policyData)},
       AUTHTYPE_SERVER,
       0,
-      &utf16_hostname[0],
+      nullptr,
     };
     ::CERT_CHAIN_POLICY_PARA policy_params = {sizeof(policy_params)};
     policy_params.pvExtraPolicyPara = &policyData;

@@ -1,0 +1,62 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= HTTPS verification, `<boost/certify/https_verification.hpp>`
+
+== enable_native_https_server_verification(context)
+[source, c++]
+----
+
+void
+enable_native_https_server_verification(asio::ssl::context& context);
+
+----
+
+Enables the use of the native certificate validation mechanism during a TLS
+handshake. Certificate verification is first
+performed using CA certificates imported into OpenSSL. If that fails because of
+missing CA certificates, the library will utilize platform specific APIs to try
+and complete the process.
+
+If verification, using the platform-specific API, fails, the handshake operation
+will fail with an error indicating that the certificate chain was self-signed. A
+more detailed error can be retrieved after the handshake operation completes,
+using `SSL_get_verify_result`.
+
+The library uses `SSL_CTX_set_cert_verify_callback` in order to override the
+default certificate verification procedure. If a regular verification callback
+is set using `asio::ssl::stream::set_verify_callback`, it will be invoked during
+the first phase of certificate verification, in the same way a
+default-configured `asio::ssl::context` would.
+
+== set_server_hostname(stream, string_view, error_code)
+[source, c++]
+----
+
+template<class NextLayer>
+void
+set_server_hostname(asio::ssl::stream<NextLayer>& stream,
+                    string_view hostname,
+                    system::error_code& ec);
+----
+Sets the expected server hostname, which will be checked during
+the verification process. The hostname must not contain `\0` characters.
+If setting the hostname results in a failure, `ec` will contain the error code.
+
+== set_server_hostname(stream, string_view)
+[source, c++]
+----
+template<class NextLayer>
+void
+set_server_hostname(asio::ssl::stream<NextLayer>& stream, string_view hostname);
+----
+Sets the expected server hostname, which will be checked during
+the verification process. The hostname must not contain `\0` characters.
+If setting the hostname results in a failure, an instance of
+`system::system_error` will be thrown.

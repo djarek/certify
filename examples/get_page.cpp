@@ -7,8 +7,8 @@
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/http/write.hpp>
 
-#include <boost/certify/rfc2818_verification.hpp>
 #include <boost/certify/extensions.hpp>
+#include <boost/certify/https_verification.hpp>
 
 #include <iostream>
 
@@ -40,7 +40,7 @@ connect(asio::io_context& ctx,
 {
     auto stream = boost::make_unique<ssl::stream<tcp::socket>>(
       connect(ctx, hostname), ssl_ctx);
-    stream->set_verify_callback(boost::certify::rfc2818_verification{hostname});
+    boost::certify::set_server_hostname(*stream, hostname);
     boost::certify::sni_hostname(*stream, hostname);
     stream->handshake(ssl::stream_base::handshake_type::client);
     return stream;
@@ -74,6 +74,7 @@ main()
     ssl_ctx.set_verify_mode(ssl::context::verify_peer |
                             ssl::context::verify_fail_if_no_peer_cert);
     ssl_ctx.set_default_verify_paths();
+    boost::certify::enable_native_https_server_verification(ssl_ctx);
 
     auto stream_ptr = connect(ctx, ssl_ctx, hostname);
     auto response = get(*stream_ptr, hostname, "/");

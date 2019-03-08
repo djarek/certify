@@ -1,4 +1,4 @@
-#include <boost/certify/rfc2818_verification.hpp>
+#include <boost/certify/https_verification.hpp>
 
 #include <boost/asio/ssl/error.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -181,7 +181,8 @@ public:
 
     void verify(system::error_code& ec)
     {
-        auto ret = ::X509_verify_cert(handle_.get());
+        auto ret =
+          certify::detail::verify_server_certificates(handle_.get(), nullptr);
         if (ret != 1)
         {
             auto const err = ::X509_STORE_CTX_get_error(handle_.get());
@@ -244,9 +245,6 @@ verify_chain(boost::filesystem::path const& chain_path,
 
     auto cert_chain = boost::certify::certificate_chain::from_file(chain_path);
     boost::certify::store_ctx ctx{cert_chain, store};
-
-    ctx.set_verify_callback(
-      boost::certify::rfc2818_verification{chain_path.stem().string()});
     ctx.verify(ec);
 }
 

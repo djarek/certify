@@ -34,7 +34,16 @@ chain fails, the chain will be considered to be
 https://en.wikipedia.org/wiki/Self-signed_certificate[self-signed] and the user
 is presented with an option to either continue the handshake or discontinue with
 an error. The verification procedure of a certificate chain presented by an
-HTTPS peer is specified in https://tools.ietf.org/html/rfc2818[RFC2818].
+HTTPS server is specified in https://tools.ietf.org/html/rfc2818[RFC2818].
+
+Some servers serve multiple hostnames using the same TCP endpoint and usually
+cannot determine which hostname to serve to a particular client unless
+additional information is provided.
+https://en.wikipedia.org/wiki/Server_Name_Indication[TLS-SNI] is an extension
+that enables a client to indicate to a server which hostname it is trying to
+connect to. Some servers require this an SNI hostname to be sent in a TLS
+handshake, because multiple hostnames may be served by the same public-facing
+IP, without requiring all those sites to use the same certificate.
 
 A client that wants to indicate to the server that a session is to be terminated
 in a clean way, it performs a shutdown operation. Some servers optimize this
