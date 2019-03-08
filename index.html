@@ -529,10 +529,18 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#tls_primer">TLS primer</a></li>
 <li><a href="#reference">Reference</a>
 <ul class="sectlevel2">
-<li><a href="#https_verification_code_boost_certify_rfc2818_verification_hpp_code">HTTPS verification, <code>&lt;boost/certify/rfc2818_verification.hpp&gt;</code></a></li>
+<li><a href="#https_verification_code_boost_certify_https_verification_hpp_code">HTTPS verification, <code>&lt;boost/certify/https_verification.hpp&gt;</code></a>
+<ul class="sectlevel3">
+<li><a href="#enable_native_https_server_verification_context">enable_native_https_server_verification(context)</a></li>
+<li><a href="#set_server_hostname_stream_string_view_error_code">set_server_hostname(stream, string_view, error_code)</a></li>
+<li><a href="#set_server_hostname_stream_string_view">set_server_hostname(stream, string_view)</a></li>
+</ul>
+</li>
 <li><a href="#tls_extensions_code_boost_certify_extensions_hpp_code">TLS extensions, <code>&lt;boost/certify/extensions.hpp&gt;</code></a>
 <ul class="sectlevel3">
-<li><a href="#tls_sni">TLS-SNI</a></li>
+<li><a href="#sni_hostname_stream">sni_hostname(stream)</a></li>
+<li><a href="#sni_hostname_stream_hostname_error_code">sni_hostname(stream, hostname, error_code)</a></li>
+<li><a href="#sni_hostname_stream_hostname">sni_hostname(stream, hostname)</a></li>
 </ul>
 </li>
 </ul>
@@ -717,7 +725,17 @@ chain fails, the chain will be considered to be
 <a href="https://en.wikipedia.org/wiki/Self-signed_certificate">self-signed</a> and the user
 is presented with an option to either continue the handshake or discontinue with
 an error. The verification procedure of a certificate chain presented by an
-HTTPS peer is specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
+HTTPS server is specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
+</div>
+<div class="paragraph">
+<p>Some servers serve multiple hostnames using the same TCP endpoint and usually
+cannot determine which hostname to serve to a particular client unless
+additional information is provided.
+<a href="https://en.wikipedia.org/wiki/Server_Name_Indication">TLS-SNI</a> is an extension
+that enables a client to indicate to a server which hostname it is trying to
+connect to. Some servers require this an SNI hostname to be sent in a TLS
+handshake, because multiple hostnames may be served by the same public-facing
+IP, without requiring all those sites to use the same certificate.</p>
 </div>
 <div class="paragraph">
 <p>A client that wants to indicate to the server that a session is to be terminated
@@ -735,42 +753,68 @@ complete.</p>
 <p>The contents of the library are in namespace boost::certify.</p>
 </div>
 <div class="sect2">
-<h3 id="https_verification_code_boost_certify_rfc2818_verification_hpp_code">HTTPS verification, <code>&lt;boost/certify/rfc2818_verification.hpp&gt;</code></h3>
+<h3 id="https_verification_code_boost_certify_https_verification_hpp_code">HTTPS verification, <code>&lt;boost/certify/https_verification.hpp&gt;</code></h3>
+<div class="sect3">
+<h4 id="enable_native_https_server_verification_context">enable_native_https_server_verification(context)</h4>
 <div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">class</span> <span class="class">rfc2818_verification</span>
-{
-<span class="directive">public</span>:
-    <span class="directive">explicit</span> rfc2818_verification(std::<span class="predefined-type">string</span> hostname);
-
-    <span class="predefined-type">bool</span> <span class="directive">operator</span>()(<span class="predefined-type">bool</span> preverified,
-                           boost::asio::ssl::verify_context&amp; ctx);
-
-    std::<span class="predefined-type">string</span> <span class="directive">const</span>&amp; hostname() <span class="directive">const</span>;
-};</code></pre>
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="directive">void</span>
+enable_native_https_server_verification(asio::ssl::context&amp; context);</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>rfc2818_verification</code> class implements a callback that performs server
-authentication during a TLS handshake. Certificate verification is first
+<p>Enables the use of the native certificate validation mechanism during a TLS
+handshake. Certificate verification is first
 performed using CA certificates imported into OpenSSL. If that fails because of
 missing CA certificates, the library will utilize platform specific APIs to try
-and complete the process. If verification passes and the peer&#8217;s certificate
-chain is authentic, this callback will continue with the verification process,
-as specified in <a href="https://tools.ietf.org/html/rfc2818">RFC2818</a>.</p>
-</div>
-<div class="paragraph">
-<p>Example usage:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="c++">boost::asio::ssl::stream&lt;boost::asio::tcp::socket&gt; stream{<span class="comment">/*...*/</span>};
-stream.set_verify_callback(boost::certify::rfc2818_verification{<span class="string"><span class="delimiter">&quot;</span><span class="content">github.com</span><span class="delimiter">&quot;</span></span>});</code></pre>
-</div>
+and complete the process.</p>
 </div>
 <div class="paragraph">
 <p>If verification, using the platform-specific API, fails, the handshake operation
-will fail with an error indicating that the certificate chain was self-signed.</p>
+will fail with an error indicating that the certificate chain was self-signed. A
+more detailed error can be retrieved after the handshake operation completes,
+using <code>SSL_get_verify_result</code>.</p>
+</div>
+<div class="paragraph">
+<p>The library uses <code>SSL_CTX_set_cert_verify_callback</code> in order to override the
+default certificate verification procedure. If a regular verification callback
+is set using <code>asio::ssl::stream::set_verify_callback</code>, it will be invoked during
+the first phase of certificate verification, in the same way a
+default-configured <code>asio::ssl::context</code> would.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="set_server_hostname_stream_string_view_error_code">set_server_hostname(stream, string_view, error_code)</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">NextLayer</span>&gt;
+<span class="directive">void</span>
+set_server_hostname(asio::ssl::stream&lt;NextLayer&gt;&amp; stream,
+                    string_view hostname,
+                    system::error_code&amp; ec);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the expected server hostname, which will be checked during
+the verification process. The hostname must not contain <code>\0</code> characters.
+If setting the hostname results in a failure, <code>ec</code> will contain the error code.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="set_server_hostname_stream_string_view">set_server_hostname(stream, string_view)</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">NextLayer</span>&gt;
+<span class="directive">void</span>
+set_server_hostname(asio::ssl::stream&lt;NextLayer&gt;&amp; stream, string_view hostname);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Sets the expected server hostname, which will be checked during
+the verification process. The hostname must not contain <code>\0</code> characters.
+If setting the hostname results in a failure, an instance of
+<code>system::system_error</code> will be thrown.</p>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -779,14 +823,7 @@ will fail with an error indicating that the certificate chain was self-signed.</
 <p>This file contains extensions to the implementation of <code>asio::ssl</code>.</p>
 </div>
 <div class="sect3">
-<h4 id="tls_sni">TLS-SNI</h4>
-<div class="paragraph">
-<p><a href="https://en.wikipedia.org/wiki/Server_Name_Indication">TLS-SNI</a> is an extension
-that enables a client to indicate to a server which hostname it is trying to
-connect to. Some servers require this an SNI hostname to be sent in a TLS
-handshake, because multiple hostnames may be served by the same public-facing
-IP, without requiring all those sites to use the same certificate.</p>
-</div>
+<h4 id="sni_hostname_stream">sni_hostname(stream)</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">AsyncStream</span>&gt;
@@ -798,6 +835,9 @@ sni_hostname(boost::asio::asio::ssl::stream&lt;AsyncStream&gt; <span class="dire
 <p>Returns the SNI hostname set on the provided stream or a default
 constructed <code>string_view</code> if none was set.</p>
 </div>
+</div>
+<div class="sect3">
+<h4 id="sni_hostname_stream_hostname_error_code">sni_hostname(stream, hostname, error_code)</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">AsyncStream</span>&gt;
@@ -811,6 +851,9 @@ sni_hostname(boost::asio::asio::ssl::stream&lt;AsyncStream&gt;&amp; stream,
 <p>Sets the provided SNI hostname on the provided stream. On success, <code>ec</code> is
 cleared, on error it will contain an error.</p>
 </div>
+</div>
+<div class="sect3">
+<h4 id="sni_hostname_stream_hostname">sni_hostname(stream, hostname)</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="c++"><span class="keyword">template</span>&lt;<span class="keyword">class</span> <span class="class">AsyncStream</span>&gt;
@@ -830,7 +873,7 @@ sni_hostname(asio::ssl::stream&lt;AsyncStream&gt;&amp; stream,
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-03-03 17:02:19 CET
+Last updated 2019-03-04 19:29:41 CET
 </div>
 </div>
 </body>
