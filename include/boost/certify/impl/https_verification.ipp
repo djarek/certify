@@ -21,7 +21,8 @@ verify_server_certificates(::X509_STORE_CTX* ctx, void*) noexcept
 
     auto const err = ::X509_STORE_CTX_get_error(ctx);
     if ((err == X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN ||
-         err == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT) &&
+         err == X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT ||
+         err == X509_V_ERR_UNABLE_TO_GET_ISSUER_CERT_LOCALLY) &&
         detail::verify_certificate_chain(ctx))
     {
         ::X509_STORE_CTX_set_error(ctx, X509_V_OK);
