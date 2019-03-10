@@ -18,6 +18,7 @@ install:
   - bash -c '$APPVEYOR_BUILD_FOLDER/tools/get_boost.sh $APPVEYOR_REPO_BRANCH $APPVEYOR_BUILD_FOLDER'
   - ps: cd boost-root
   - ps: ./bootstrap.bat
+  - ps: ( Get-ChildItem -Path C:/projects/boost-root/libs/certify/tests/res/rootCA.cer) | Import-Certificate -CertStoreLocation cert:\LocalMachine\Root
 
 build: off
 

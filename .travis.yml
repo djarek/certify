@@ -69,8 +69,8 @@ matrix:
         - cd ..
         - rm -rf openssl
         - cp tools/user-config.jam ~/
-        - alias readlink=greadlink
       script:
+        - sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain libs/certify/tests/res/rootCA.cer
         - ./b2 variant=debug cxxstd=14 toolset=clang libs/certify/tests libs/certify/tools/ libs/certify/examples
 
 install:
