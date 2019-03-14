@@ -23,6 +23,12 @@ build: off
 
 test_script:
   - ps: if ($env:PLATFORM -eq "x86") { $addr_model = "32" } else { $addr_model = "64" }
+  - ps: cd libs\certify\tools\certs
+  - bash -c './gen_cert.sh'
+  - ps: ( Get-ChildItem -Path rootCA.crt) | Import-Certificate -CertStoreLocation cert:\LocalMachine\Root
+  - ps: cp example.org.crt $env:APPVEYOR_BUILD_FOLDER\..\boost-root\libs\certify\tests\res\success_chains
+  - ps: cp revoked.org.crt $env:APPVEYOR_BUILD_FOLDER\..\boost-root\libs\certify\tests\res\fail_chains
+  - ps: cd $env:APPVEYOR_BUILD_FOLDER\..\boost-root
   - ps: .\b2.exe variant=debug,release toolset=msvc cxxstd=11,14,17 address-model=$addr_model libs\certify\tests libs\certify\examples
   - ps: .\b2.exe variant=debug,release toolset=msvc cxxstd=11,14,17 address-model=$addr_model libs\certify\tools
 

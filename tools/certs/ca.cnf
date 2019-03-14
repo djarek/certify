@@ -1,0 +1,70 @@
+dir                          = .
+
+[ ca ]
+default_ca                   = CA_default
+
+[ CA_default ]
+serial                       = $dir/serial
+database                     = $dir/index.txt
+new_certs_dir                = $dir/newcerts
+certificate                  = $dir/rootCA.crt
+private_key                  = $dir/private/rootCA.key
+x509_extensions              = usr_cert
+default_days                 = 730
+default_crl_days             = 30
+default_md                   = sha256
+preserve                     = no
+email_in_dn                  = no
+nameopt                      = default_ca
+certopt                      = default_ca
+policy                       = policy_match
+
+[ policy_match ]
+countryName                  = match
+stateOrProvinceName          = optional
+organizationName             = optional
+organizationalUnitName       = optional
+commonName                   = supplied
+emailAddress                 = optional
+
+[ req ]
+prompt = no
+default_bits                 = 4096                  # Size of keys
+default_keyfile              = rootCA.key            # name of generated keys
+default_md                   = sha256                # message digest algorithm
+string_mask                  = nombstr               # permitted characters
+distinguished_name           = req_distinguished_name
+req_extensions               = v3_req
+
+[ req_distinguished_name ]
+# Variable name                Prompt string
+#---------------------------   ------------------------------
+countryName                 = PL
+stateOrProvinceName         = Dolnośląskie
+localityName               = Wrocław
+organizationName           = OrganizationCA
+commonName                 = rootCA.org
+
+
+[ v3_ca ]
+basicConstraints             = CA:TRUE
+subjectKeyIdentifier         = hash
+authorityKeyIdentifier       = keyid:always,issuer:always
+
+[ v3_req ]
+basicConstraints             = CA:FALSE
+subjectKeyIdentifier         = hash
+
+[ crl_ext ]
+authorityKeyIdentifier       = keyid:always,issuer:always
+
+# [ v3_OCSP ]
+# basicConstraints             = CA:FALSE
+# keyUsage                     = nonRepudiation, digitalSignature, keyEncipherment
+# extendedKeyUsage             = OCSPSigning
+
+[ usr_cert ]
+basicConstraints             = CA:FALSE
+subjectKeyIdentifier         = hash
+authorityKeyIdentifier       = keyid,issuer:always
+# authorityInfoAccess          = OCSP;URI:http://127.0.0.1:8080
