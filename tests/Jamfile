@@ -50,4 +50,5 @@ test-suite "certify" :
   [ run extensions.cpp ]
   [ run https_verification_success.cpp ]
   [ run https_verification_fail.cpp ]
+  [ run crl_set_parser.cpp ]
   ;
