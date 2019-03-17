@@ -51,4 +51,5 @@ test-suite "certify" :
   [ run https_verification_success.cpp ]
   [ run https_verification_fail.cpp ]
   [ run crl_set_parser.cpp ]
+  [ run detail_spki_digest.cpp ]
   ;
