@@ -49,7 +49,7 @@ get_cert_chain_context(::CERT_CONTEXT const* cert_ctx, CERT_CHAIN_PARA* params)
                                 nullptr,
                                 cert_ctx->hCertStore,
                                 params,
-                                CERT_CHAIN_REVOCATION_CHECK_CHAIN,
+                                CERT_CHAIN_REVOCATION_CHECK_CACHE_ONLY,
                                 nullptr,
                                 &ctx);
 
