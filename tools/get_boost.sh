@@ -10,45 +10,46 @@ fi
 git clone -b $branch --depth 1 https://github.com/boostorg/boost.git boost-root
 
 cd boost-root
-git submodule update --init libs/array
-git submodule update --init libs/asio
-git submodule update --init libs/assert
-git submodule update --init libs/beast
-git submodule update --init tools/boost_install
-git submodule update --init libs/bind
-git submodule update --init libs/chrono
-git submodule update --init libs/concept_check
-git submodule update --init libs/config
-git submodule update --init libs/container
-git submodule update --init libs/container_hash
-git submodule update --init libs/core
-git submodule update --init libs/date_time
-git submodule update --init libs/detail
-git submodule update --init libs/endian
-git submodule update --init libs/filesystem
-git submodule update --init libs/integer
-git submodule update --init libs/intrusive
-git submodule update --init libs/io
-git submodule update --init libs/iterator
-git submodule update --init libs/lexical_cast
-git submodule update --init libs/math
-git submodule update --init libs/move
-git submodule update --init libs/mpl
-git submodule update --init libs/mp11
-git submodule update --init libs/numeric
-git submodule update --init libs/optional
-git submodule update --init libs/predef
-git submodule update --init libs/preprocessor
-git submodule update --init libs/range
-git submodule update --init libs/smart_ptr
-git submodule update --init libs/static_assert
-git submodule update --init libs/system
-git submodule update --init libs/throw_exception
-git submodule update --init libs/tokenizer
-git submodule update --init libs/type_traits
-git submodule update --init libs/utility
-git submodule update --init libs/winapi
-git submodule update --init tools/build
+git submodule update --init \
+    libs/array \
+    libs/asio \
+    libs/assert \
+    libs/beast \
+    tools/boost_install \
+    libs/bind \
+    libs/chrono \
+    libs/concept_check \
+    libs/config \
+    libs/container \
+    libs/container_hash \
+    libs/core \
+    libs/date_time \
+    libs/detail \
+    libs/endian \
+    libs/filesystem \
+    libs/integer \
+    libs/intrusive \
+    libs/io \
+    libs/iterator \
+    libs/lexical_cast \
+    libs/math \
+    libs/move \
+    libs/mpl \
+    libs/mp11 \
+    libs/numeric \
+    libs/optional \
+    libs/predef \
+    libs/preprocessor \
+    libs/range \
+    libs/smart_ptr \
+    libs/static_assert \
+    libs/system \
+    libs/throw_exception \
+    libs/type_traits \
+    libs/utility \
+    libs/winapi \
+    tools/build \
+
 echo Submodule update complete
 
 rm -rf libs/certify
