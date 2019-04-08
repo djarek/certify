@@ -3,14 +3,14 @@
 build_dir=$2
 
 branch="master"
-if [ $1 == "master" ]; then
+if [ "$1" = "master" ]; then
     branch="develop"
 fi
 
 git clone -b $branch --depth 1 https://github.com/boostorg/boost.git boost-root
 
 cd boost-root
-git submodule update --init \
+git submodule update --init --depth 1 --jobs 4 \
     libs/array \
     libs/asio \
     libs/assert \
