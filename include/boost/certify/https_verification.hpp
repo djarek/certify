@@ -28,15 +28,15 @@ verify_server_certificates(::X509_STORE_CTX* ctx, void*) noexcept;
 } // namespace certify
 } // namespace boost
 
-#if BOOST_CERTIFY_USE_NATIVE_CERTIFICATE_STORE
+#if BOOST_CERTIFY_USE_NATIVE_CERTIFICATE_STORE && BOOST_CERTIFY_HEADER_ONLY
 #if BOOST_WINDOWS
-#include <boost/certify/detail/keystore_windows.hpp>
+#include <boost/certify/detail/keystore_windows.ipp>
 #elif __APPLE__
-#include <boost/certify/detail/keystore_apple.hpp>
+#include <boost/certify/detail/keystore_apple.ipp>
 #else
-#include <boost/certify/detail/keystore_default.hpp>
+#include <boost/certify/detail/keystore_default.ipp>
 #endif
-#endif // BOOST_CERTIFY_USE_NATIVE_CERTIFICATE_STORE
+#endif // BOOST_CERTIFY_USE_NATIVE_CERTIFICATE_STORE && BOOST_CERTIFY_HEADER_ONLY
 
 namespace boost
 {
@@ -60,5 +60,8 @@ enable_native_https_server_verification(asio::ssl::context& context);
 } // namespace boost
 
 #include <boost/certify/impl/https_verification.hpp>
+#if BOOST_CERTIFY_HEADER_ONLY
 #include <boost/certify/impl/https_verification.ipp>
+#endif // BOOST_CERTIFY_HEADER_ONLY
+
 #endif // BOOST_CERTIFY_HTTPS_VERIFICATION_HPP
