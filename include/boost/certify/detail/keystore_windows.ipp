@@ -39,7 +39,7 @@ struct cert_store_deleter
     }
 };
 
-inline std::unique_ptr<::CERT_CHAIN_CONTEXT const, cert_chain_deleter>
+BOOST_CERTIFY_DECL std::unique_ptr<::CERT_CHAIN_CONTEXT const, cert_chain_deleter>
 get_cert_chain_context(::CERT_CONTEXT const* cert_ctx, CERT_CHAIN_PARA* params)
 {
     ::CERT_CHAIN_CONTEXT const* ctx = nullptr;
@@ -62,7 +62,7 @@ get_cert_chain_context(::CERT_CONTEXT const* cert_ctx, CERT_CHAIN_PARA* params)
     return ret;
 }
 
-inline bool
+BOOST_CERTIFY_DECL bool
 dump_cert(X509* cert, std::vector<std::uint8_t>& buffer)
 {
     auto cert_len = ::i2d_X509(cert, nullptr);
@@ -76,7 +76,7 @@ dump_cert(X509* cert, std::vector<std::uint8_t>& buffer)
     return true;
 }
 
-inline std::unique_ptr<::CERT_CONTEXT const, cert_context_deleter>
+BOOST_CERTIFY_DECL std::unique_ptr<::CERT_CONTEXT const, cert_context_deleter>
   create_cert_ctx(STACK_OF(X509) * chain)
 {
     std::unique_ptr<HCERTSTORE, cert_store_deleter> store{
@@ -119,7 +119,7 @@ inline std::unique_ptr<::CERT_CONTEXT const, cert_context_deleter>
     return ret;
 }
 
-inline bool
+BOOST_CERTIFY_DECL bool
 verify_certificate_chain(::X509_STORE_CTX* ctx)
 {
     auto* const chain = ::X509_STORE_CTX_get_chain(ctx);

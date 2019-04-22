@@ -35,7 +35,7 @@ struct cf_deleter
 template<class T>
 using cf_ptr = std::unique_ptr<T, cf_deleter<T>>;
 
-inline bool
+BOOST_CERTIFY_DECL bool
 dump_cert(X509* cert, std::vector<unsigned char>& buffer)
 {
     auto cert_len = ::i2d_X509(cert, nullptr);
@@ -68,7 +68,7 @@ struct certs_vec
     std::vector<void const*> vec_;
 };
 
-inline bool
+BOOST_CERTIFY_DECL bool
 verify_certificate_chain(::X509_STORE_CTX* ctx)
 {
     auto* const chain = ::X509_STORE_CTX_get_chain(ctx);

@@ -13,7 +13,7 @@ namespace certify
 namespace detail
 {
 
-extern "C" inline int
+extern "C" BOOST_CERTIFY_DECL int
 verify_server_certificates(::X509_STORE_CTX* ctx, void*) noexcept
 {
     if (::X509_verify_cert(ctx) == 1)
@@ -48,7 +48,7 @@ set_server_hostname(::SSL* handle, string_view hostname, system::error_code& ec)
 
 } // namespace detail
 
-inline void
+BOOST_CERTIFY_DECL void
 enable_native_https_server_verification(asio::ssl::context& context)
 {
     ::SSL_CTX_set_cert_verify_callback(
