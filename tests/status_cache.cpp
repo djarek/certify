@@ -1,5 +1,5 @@
 #include <boost/certify/detail/status_cache.hpp>
-
+#include <boost/certify/detail/spki_blacklist.hpp>
 #include <boost/core/lightweight_test.hpp>
 #include <thread>
 
@@ -37,6 +37,14 @@ main()
         // Stale validity check must not update the status
         cache.mark_valid("AAA", sc::system_clock::now() - sc::microseconds{10});
         BOOST_TEST(cache.check("AAA") == bc::certificate_status::unknown);
+    }
+
+    {
+        // Use blacklist
+        bc::status_cache cache;
+        std::string str{bc::detail::spki_blacklist[0].begin(), bc::detail::spki_blacklist[0].end()};
+        cache.revoke(str);
+        BOOST_TEST(cache.check(str) == bc::certificate_status::revoked);
     }
 
     return boost::report_errors();
