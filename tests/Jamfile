@@ -6,14 +6,6 @@
 
 import testing ;
 
-lib crypt32 ;
-
-lib ssl ;
-lib crypto ;
-
-lib ssl : : <target-os>windows <name>ssleay32 ;
-lib crypto : : <target-os>windows <name>libeay32 ;
-
 lib CoreFoundation ;
 lib Security ;
 
@@ -21,10 +13,9 @@ project /boost/certify/tests
   : requirements
     <library>/boost/system//boost_system
     <library>/boost/filesystem//boost_filesystem
-    <library>ssl
-    <library>crypto
+    <library>/openssl//ssl
+    <library>/openssl//crypto
     <include>./extras/include
-    <target-os>windows:<library>crypt32
     <define>BOOST_ALL_NO_LIB=1
     <define>BOOST_ASIO_DISABLE_BOOST_ARRAY=1
     <define>BOOST_ASIO_DISABLE_BOOST_BIND=1
