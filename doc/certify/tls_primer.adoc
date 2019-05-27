@@ -9,6 +9,8 @@ http://www.boost.org/LICENSE_1_0.txt
 
 = TLS primer
 
+== Introduction
+
 TLS (Transport Layer Security, specified in
 https://tools.ietf.org/html/rfc8447[RFC8447]) is a network protocol which provides
 confidentiality and authentication between peers of a network connection. TLS sessions are

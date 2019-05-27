@@ -40,8 +40,11 @@ connect(asio::io_context& ctx,
 {
     auto stream = boost::make_unique<ssl::stream<tcp::socket>>(
       connect(ctx, hostname), ssl_ctx);
+    // tag::stream_setup_source[]
     boost::certify::set_server_hostname(*stream, hostname);
     boost::certify::sni_hostname(*stream, hostname);
+    // end::stream_setup_source[]
+
     stream->handshake(ssl::stream_base::handshake_type::client);
     return stream;
 }
@@ -74,8 +77,9 @@ main()
     ssl_ctx.set_verify_mode(ssl::context::verify_peer |
                             ssl::context::verify_fail_if_no_peer_cert);
     ssl_ctx.set_default_verify_paths();
+    // tag::ctx_setup_source[]
     boost::certify::enable_native_https_server_verification(ssl_ctx);
-
+    // end::ctx_setup_source[]
     auto stream_ptr = connect(ctx, ssl_ctx, hostname);
     auto response = get(*stream_ptr, hostname, "/");
     std::cout << response << '\n';
