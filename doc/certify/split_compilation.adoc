@@ -1,0 +1,28 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= Split compilation
+
+Certify is designed to be header-only to make inclusion into projects as easy as
+possible. However, header-only libraries make tradeoffs that might not be
+desired by some users, namely they expose private symbols into users'
+translation units. Some libraries, like ASIO, Beast and Certify allow the user to opt in to
+the separate compilation unit. In the case of this library, the user must:
+
+- Define the `BOOST_CERTIFY_SEPARATE_COMPILATION` preprocessor macro. It is
+recommended that user code provides this macro definition via compiler
+configuration or build system settings.
+- Add a single translation unit that includes the following file:
+[source, c++]
+----
+#include <boost/certify/src.hpp>
+----
+It is recommended that  in larger projects, that consist of a larger number of
+executables or libraries, one creates a static library from that translation
+unit to enable reuse and avoid additional recompilation.
