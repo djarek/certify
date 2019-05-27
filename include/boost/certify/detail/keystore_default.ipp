@@ -11,7 +11,7 @@ namespace certify
 namespace detail
 {
 
-inline bool
+BOOST_CERTIFY_DECL bool
 verify_certificate_chain(::X509_STORE_CTX*)
 {
     return false;
