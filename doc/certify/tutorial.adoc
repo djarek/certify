@@ -1,0 +1,25 @@
+////
+Copyright 2019 Damian Jarek
+
+Distributed under the Boost Software License, Version 1.0.
+
+See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt
+////
+
+= Tutorial
+
+== Enabling native verification
+
+Enabling the use of native APIs for TLS certificate verification has to be done for every `boost::asio::ssl::context`, preferably before the context is first used:
+[source,cpp]
+----
+include::../../examples/get_page.cpp[tag=ctx_setup_source]
+----
+This replaces the verification callback in OpenSSL which performs the native verification if OpenSSL verification fails.
+
+The user has to set up the native verification for every SSL connection that uses Certify's features. The user has to provide a `hostname` parameter to perform domain name verification according to RFC2818.
+[source,cpp]
+----
+include::../../examples/get_page.cpp[tag=stream_setup_source]
+----
