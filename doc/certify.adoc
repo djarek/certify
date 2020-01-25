@@ -25,6 +25,8 @@ include::certify/getting_started.adoc[]
 
 include::certify/tls_primer.adoc[]
 
+include::certify/split_compilation.adoc[]
+
 include::certify/reference.adoc[]
 
 :leveloffset: -1
