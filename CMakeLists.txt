@@ -65,7 +65,7 @@ install(FILES
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
         DESTINATION include
-        FILES_MATCHING PATTERN "*.hpp")
+        FILES_MATCHING PATTERN "*.hpp" PATTERN "*.ipp")
 
 install(TARGETS core
         EXPORT certifyTargets
