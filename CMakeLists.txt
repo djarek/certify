@@ -59,7 +59,7 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion)
 
 install(FILES
-            "netutilsConfig.cmake"
+            "certifyConfig.cmake"
             "${CMAKE_BINARY_DIR}/certifyConfigVersion.cmake"
         DESTINATION lib/cmake/certify)
 
