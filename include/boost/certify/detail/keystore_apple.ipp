@@ -117,13 +117,7 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
     if (status != noErr)
         return false;
 
-    SecTrustResultType result;
-    status = SecTrustEvaluate(trust.get(), &result);
-    if (status == noErr && (result == kSecTrustResultUnspecified ||
-                            result == kSecTrustResultProceed))
-        return true;
-    else
-        return false;
+    return SecTrustEvaluateWithError(trust.get(), nil);
 }
 
 } // namespace detail
