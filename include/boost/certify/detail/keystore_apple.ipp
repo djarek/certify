@@ -117,7 +117,7 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
     if (status != noErr)
         return false;
 
-    return SecTrustEvaluateWithError(trust.get(), nil);
+    return SecTrustEvaluateWithError(trust.get(), nullptr);
 }
 
 } // namespace detail
