@@ -14,7 +14,7 @@ namespace detail
 {
 
 inline bool
-verify_certificate_chain(::X509_STORE_CTX* ctx);
+verify_certificate_chain(::X509_STORE_CTX* ctx, std::unique_ptr<char[]> host);
 
 inline void
 set_server_hostname(::SSL* handle,
@@ -54,7 +54,7 @@ void
 set_server_hostname(asio::ssl::stream<NextLayer>& stream, string_view hostname);
 
 void
-enable_native_https_server_verification(asio::ssl::context& context);
+enable_native_https_server_verification(asio::ssl::context& context, string_view hostname);
 
 } // namespace certify
 } // namespace boost

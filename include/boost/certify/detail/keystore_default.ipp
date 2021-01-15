@@ -12,7 +12,7 @@ namespace detail
 {
 
 BOOST_CERTIFY_DECL bool
-verify_certificate_chain(::X509_STORE_CTX*)
+verify_certificate_chain(::X509_STORE_CTX*, std::unique_ptr<char[]> host)
 {
     return false;
 }

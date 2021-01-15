@@ -69,7 +69,7 @@ struct certs_vec
 };
 
 BOOST_CERTIFY_DECL bool
-verify_certificate_chain(::X509_STORE_CTX* ctx)
+verify_certificate_chain(::X509_STORE_CTX* ctx, std::unique_ptr<char[]> host)
 {
     auto* const chain = ::X509_STORE_CTX_get_chain(ctx);
     auto const cert_count = sk_X509_num(chain);
@@ -102,9 +102,16 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
     if (cert_array == nullptr)
         return false;
 
-    // No need to pass hostname in - it's already verified by OpenSSL at this
-    // point.
-    cf_ptr<SecPolicyRef> policy{SecPolicyCreateSSL(true, /*hostname*/ nullptr)};
+    cf_ptr<CFStringRef> cfHostName;
+    if (host) {
+        cfHostName = CFStringCreateWithCStringNoCopy(
+            kCFAllocatorDefault, host.get(), kCFStringEncodingASCII, kCFAllocatorNull);
+        if (cfHostName.get() == nullptr)
+        {
+            return false;
+        }
+    }
+    cf_ptr<SecPolicyRef> policy{SecPolicyCreateSSL(true, cfHostName.get())};
 
     OSStatus status;
     auto trust = [&]() -> cf_ptr<SecTrustRef> {

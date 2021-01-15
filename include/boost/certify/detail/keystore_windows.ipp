@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <wincrypt.h>
+#include <stringapiset.h>
 
 namespace boost
 {
@@ -119,8 +120,18 @@ BOOST_CERTIFY_DECL std::unique_ptr<::CERT_CONTEXT const, cert_context_deleter>
     return ret;
 }
 
+inline std::unique_ptr<wchar_t[]> str2wstr(const char *str)
+{
+    if (!str)
+        return {};
+    int wchars_num = MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
+    wchar_t* wstr = new wchar_t[wchars_num];
+    MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, wchars_num);
+    return std::unique_ptr<wchar_t[]>(wstr);
+}
+
 BOOST_CERTIFY_DECL bool
-verify_certificate_chain(::X509_STORE_CTX* ctx)
+verify_certificate_chain(::X509_STORE_CTX* ctx, std::unique_ptr<char[]> host)
 {
     auto* const chain = ::X509_STORE_CTX_get_chain(ctx);
     if (sk_X509_num(chain) <= 0)
@@ -150,11 +161,12 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
         cert_chain_context->TrustStatus.dwErrorStatus != CERT_TRUST_NO_ERROR)
         return false;
 
+    auto hostname = str2wstr(host.get());
     ::HTTPSPolicyCallbackData policyData = {
       {sizeof(policyData)},
       AUTHTYPE_SERVER,
       0,
-      nullptr,
+      hostname.get(),
     };
     ::CERT_CHAIN_POLICY_PARA policy_params = {sizeof(policy_params)};
     policy_params.pvExtraPolicyPara = &policyData;
