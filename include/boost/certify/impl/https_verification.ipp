@@ -1,5 +1,5 @@
-#ifndef BOOST_CERTIFY_IMPL_RFC2818_VERIFICATION_IPP
-#define BOOST_CERTIFY_IMPL_RFC2818_VERIFICATION_IPP
+#ifndef BOOST_CERTIFY_IMPL_HTTPS_VERIFICATION_IPP
+#define BOOST_CERTIFY_IMPL_HTTPS_VERIFICATION_IPP
 
 #include <boost/certify/https_verification.hpp>
 
@@ -33,9 +33,8 @@ verify_server_certificates(::X509_STORE_CTX* ctx, void*) noexcept
 }
 
 void
-set_server_hostname(::SSL* handle, string_view hostname, system::error_code& ec)
+set_server_hostname(::X509_VERIFY_PARAM_st* param, string_view hostname, system::error_code& ec)
 {
-    auto* param = ::SSL_get0_param(handle);
     ::X509_VERIFY_PARAM_set_hostflags(param,
                                       X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS);
     // TODO(djarek): OpenSSL doesn't report an error here?
@@ -45,6 +44,14 @@ set_server_hostname(::SSL* handle, string_view hostname, system::error_code& ec)
     else
         ec = {};
 }
+
+void
+set_server_hostname(::SSL* handle, string_view hostname, system::error_code& ec)
+{
+    auto* param = ::SSL_get0_param(handle);
+    set_server_hostname(param, hostname, ec);
+}
+
 
 } // namespace detail
 
@@ -58,4 +65,4 @@ enable_native_https_server_verification(asio::ssl::context& context)
 } // namespace certify
 } // namespace boost
 
-#endif // BOOST_CERTIFY_IMPL_RFC2818_VERIFICATION_IPP
+#endif // BOOST_CERTIFY_IMPL_HTTPS_VERIFICATION_IPP

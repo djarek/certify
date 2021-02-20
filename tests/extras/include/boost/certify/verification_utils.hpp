@@ -1,9 +1,13 @@
+#ifndef BOOST_CERTIFY_VERIFICATION_UTILS_HPP
+#define BOOST_CERTIFY_VERIFICATION_UTILS_HPP
+
 #include <boost/certify/https_verification.hpp>
 
 #include <boost/asio/ssl/error.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
+#include <boost/utility/string_view.hpp>
 
 namespace boost
 {
@@ -84,6 +88,15 @@ public:
     {
         auto ret = ::X509_STORE_set_default_paths(handle_.get());
         assert(ret == 1);
+    }
+
+    void set_server_hostname(string_view hostname)
+    {
+        auto* param = ::X509_STORE_get0_param(handle_.get());
+        system::error_code ec;
+        detail::set_server_hostname(param, hostname, ec);
+        if (ec)
+            boost::throw_exception(system::system_error{ec});
     }
 
     native_handle_type native_handle() const
@@ -244,9 +257,13 @@ verify_chain(boost::filesystem::path const& chain_path,
         return;
 
     auto cert_chain = boost::certify::certificate_chain::from_file(chain_path);
+    store.set_server_hostname(chain_path.stem().string());
     boost::certify::store_ctx ctx{cert_chain, store};
     ctx.verify(ec);
 }
 
 } // namespace certify
 } // namespace boost
+
+#endif // BOOST_CERTIFY_VERIFICATION_UTILS_HPP
+
