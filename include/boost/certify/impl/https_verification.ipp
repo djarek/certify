@@ -14,9 +14,9 @@ namespace detail
 {
 
 extern "C" BOOST_CERTIFY_DECL int
-verify_server_certificates(::X509_STORE_CTX* ctx, void*) noexcept
+verify_server_certificates(int preverified, X509_STORE_CTX* ctx) noexcept
 {
-    if (::X509_verify_cert(ctx) == 1)
+    if (preverified == 1)
         return true;
 
     auto const err = ::X509_STORE_CTX_get_error(ctx);
@@ -58,8 +58,9 @@ set_server_hostname(::SSL* handle, string_view hostname, system::error_code& ec)
 BOOST_CERTIFY_DECL void
 enable_native_https_server_verification(asio::ssl::context& context)
 {
-    ::SSL_CTX_set_cert_verify_callback(
-      context.native_handle(), &detail::verify_server_certificates, nullptr);
+    ::SSL_CTX_set_verify(context.native_handle(),
+                         ::SSL_CTX_get_verify_mode(context.native_handle()),
+                         &detail::verify_server_certificates);
 }
 
 } // namespace certify

@@ -138,9 +138,6 @@ get_store_ctx_category()
     return instance;
 }
 
-extern "C" inline int
-verify_callback(int preverified, X509_STORE_CTX* ctx);
-
 class store_ctx
 {
 public:
@@ -167,6 +164,8 @@ public:
                   boost::asio::error::get_ssl_category()};
             boost::throw_exception(system::system_error{ec});
         }
+        ::X509_STORE_CTX_set_verify_cb(handle_.get(),
+                                       &detail::verify_server_certificates);
     }
 
     store_ctx(store_ctx const&) = delete;
@@ -177,16 +176,6 @@ public:
 
     ~store_ctx() = default;
 
-    template<typename T>
-    void set_verify_callback(T&& t)
-    {
-        callback_ = std::forward<T>(t);
-        ::X509_STORE_CTX_set_verify_cb(handle_.get(), &verify_callback);
-        auto const ret =
-          ::X509_STORE_CTX_set_ex_data(handle_.get(), get_ex_index(), this);
-        assert(ret == 1);
-    }
-
     native_handle_type native_handle() const
     {
         return handle_.get();
@@ -194,8 +183,7 @@ public:
 
     void verify(system::error_code& ec)
     {
-        auto ret =
-          certify::detail::verify_server_certificates(handle_.get(), nullptr);
+        auto ret = ::X509_verify_cert(handle_.get());
         if (ret != 1)
         {
             auto const err = ::X509_STORE_CTX_get_error(handle_.get());
@@ -214,18 +202,6 @@ public:
     }
 
 private:
-    friend int verify_callback(int preverified, X509_STORE_CTX* ctx);
-
-    static int get_ex_index()
-    {
-        static int const index = []() {
-            return ::X509_STORE_CTX_get_ex_new_index(
-              0, nullptr, nullptr, nullptr, nullptr);
-        }();
-
-        return index;
-    }
-
     struct free
     {
         void operator()(native_handle_type h)
@@ -235,18 +211,7 @@ private:
     };
 
     std::unique_ptr<::X509_STORE_CTX, free> handle_;
-    std::function<int(bool, boost::asio::ssl::verify_context&)> callback_;
 };
-
-extern "C" inline int
-verify_callback(int preverified, X509_STORE_CTX* ctx)
-{
-    boost::asio::ssl::verify_context verify_ctx{ctx};
-    void* const p = X509_STORE_CTX_get_ex_data(ctx, store_ctx::get_ex_index());
-    BOOST_ASSERT(p != nullptr);
-    auto& sctx = *static_cast<store_ctx*>(p);
-    return sctx.callback_(preverified == 1, verify_ctx);
-}
 
 void
 verify_chain(boost::filesystem::path const& chain_path,
