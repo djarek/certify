@@ -10,7 +10,6 @@
 #include <boost/utility/string_view.hpp>
 #include <openssl/pem.h>
 #include <openssl/x509.h>
-#include <openssl/x509_vfy.h>
 
 namespace boost
 {
@@ -91,15 +90,6 @@ public:
     {
         auto ret = ::X509_STORE_set_default_paths(handle_.get());
         assert(ret == 1);
-    }
-
-    void set_server_hostname(string_view hostname)
-    {
-        auto* param = ::X509_STORE_get0_param(handle_.get());
-        system::error_code ec;
-        detail::set_server_hostname(param, hostname, ec);
-        if (ec)
-            boost::throw_exception(system::system_error{ec});
     }
 
     native_handle_type native_handle() const
@@ -184,6 +174,15 @@ public:
         return handle_.get();
     }
 
+    void set_server_hostname(string_view hostname)
+    {
+        auto* param = ::X509_STORE_CTX_get0_param(handle_.get());
+        system::error_code ec;
+        detail::set_server_hostname(param, hostname, ec);
+        if (ec)
+            boost::throw_exception(system::system_error{ec});
+    }
+
     void verify(system::error_code& ec)
     {
         auto ret = ::X509_verify_cert(handle_.get());
@@ -225,8 +224,8 @@ verify_chain(boost::filesystem::path const& chain_path,
         return;
 
     auto cert_chain = boost::certify::certificate_chain::from_file(chain_path);
-    store.set_server_hostname(chain_path.stem().string());
     boost::certify::store_ctx ctx{cert_chain, store};
+    ctx.set_server_hostname(chain_path.stem().string());
     ctx.verify(ec);
 }
 
