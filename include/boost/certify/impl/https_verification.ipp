@@ -4,7 +4,8 @@
 #include <boost/certify/https_verification.hpp>
 
 #include <boost/asio/ip/address.hpp>
-#include <openssl/x509v3.h>
+#include <openssl/ssl.h>
+#include <openssl/x509_vfy.h>
 
 namespace boost
 {
@@ -33,7 +34,7 @@ verify_server_certificates(int preverified, X509_STORE_CTX* ctx) noexcept
 }
 
 void
-set_server_hostname(::X509_VERIFY_PARAM_st* param, string_view hostname, system::error_code& ec)
+set_server_hostname(::X509_VERIFY_PARAM* param, string_view hostname, system::error_code& ec)
 {
     ::X509_VERIFY_PARAM_set_hostflags(param,
                                       X509_CHECK_FLAG_NO_PARTIAL_WILDCARDS);
