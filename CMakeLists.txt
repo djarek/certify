@@ -19,7 +19,7 @@ find_package(Boost 1.67
              COMPONENTS
                 system
                 filesystem
-				date_time
+                date_time
                 unit_test_framework
              REQUIRED)
 
@@ -65,7 +65,7 @@ install(FILES
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
         DESTINATION include
-        FILES_MATCHING PATTERN "*.hpp")
+	FILES_MATCHING PATTERN "*.hpp" PATTERN "*.ipp")
 
 install(TARGETS core
         EXPORT certifyTargets
