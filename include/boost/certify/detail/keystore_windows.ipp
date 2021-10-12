@@ -96,7 +96,7 @@ BOOST_CERTIFY_DECL std::unique_ptr<::CERT_CONTEXT const, cert_context_deleter>
     if (!CertAddEncodedCertificateToStore(store.get(),
                                           X509_ASN_ENCODING,
                                           buffer.data(),
-                                          buffer.size(),
+                                          static_cast<DWORD>(buffer.size()),
                                           CERT_STORE_ADD_ALWAYS,
                                           &leaf_cert))
         return nullptr;
@@ -110,7 +110,7 @@ BOOST_CERTIFY_DECL std::unique_ptr<::CERT_CONTEXT const, cert_context_deleter>
         if (!CertAddEncodedCertificateToStore(store.get(),
                                               X509_ASN_ENCODING,
                                               buffer.data(),
-                                              buffer.size(),
+                                              static_cast<DWORD>(buffer.size()),
                                               CERT_STORE_ADD_ALWAYS,
                                               nullptr))
             return nullptr;

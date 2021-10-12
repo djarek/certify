@@ -11,5 +11,5 @@ function (certify_verify_add_test test_file)
              COMMAND ${target_name})
 endfunction(certify_verify_add_test)
 
-certify_verify_add_test(rfc2818_verification_success.cpp)
-certify_verify_add_test(rfc2818_verification_fail.cpp)
+certify_verify_add_test(https_verification_success.cpp)
+certify_verify_add_test(https_verification_fail.cpp)

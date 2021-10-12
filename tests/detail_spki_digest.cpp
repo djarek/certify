@@ -9,7 +9,7 @@ main()
     ::SSL_library_init();
 
     auto chain = boost::certify::certificate_chain::from_file(
-      "libs/certify/tests/res/success_chains/github.com.crt");
+      "libs/certify/tests/res/fail_chains/github.com.crt");
 
     std::array<std::array<unsigned char, 32>, 3> const expected = {
       {{{0xa3, 0x9a, 0x1a, 0xe4, 0x5e, 0x0b, 0x6d, 0x91, 0x1f, 0x79, 0x9d,

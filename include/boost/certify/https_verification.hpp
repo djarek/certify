@@ -22,7 +22,7 @@ set_server_hostname(::SSL* handle,
                     system::error_code& ec);
 
 extern "C" inline int
-verify_server_certificates(::X509_STORE_CTX* ctx, void*) noexcept;
+verify_server_certificates(int preverified, X509_STORE_CTX* ctx) noexcept;
 
 } // namespace detail
 } // namespace certify
