@@ -33,7 +33,7 @@ verify_server_certificates(int preverified, X509_STORE_CTX* ctx) noexcept
     return false;
 }
 
-void
+BOOST_CERTIFY_DECL void
 set_server_hostname(::X509_VERIFY_PARAM* param, string_view hostname, system::error_code& ec)
 {
     ::X509_VERIFY_PARAM_set_hostflags(param,
@@ -46,7 +46,7 @@ set_server_hostname(::X509_VERIFY_PARAM* param, string_view hostname, system::er
         ec = {};
 }
 
-void
+BOOST_CERTIFY_DECL void
 set_server_hostname(::SSL* handle, string_view hostname, system::error_code& ec)
 {
     auto* param = ::SSL_get0_param(handle);
