@@ -35,12 +35,17 @@ add_library(certify::core ALIAS core)
 target_compile_features(core INTERFACE cxx_std_11)
 
 target_include_directories(core INTERFACE
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
 if(MSVC)
 	target_link_libraries(core INTERFACE Crypt32.lib)
+endif()
+
+if(APPLE)
+    target_link_libraries(core INTERFACE "-framework CoreFoundation" "-framework Security")
+    set_target_properties(core PROPERTIES LINK_FLAGS "-Wl,-F/Library/Frameworks")
 endif()
 
 target_link_libraries(
