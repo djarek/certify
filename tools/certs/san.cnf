@@ -1,0 +1,17 @@
+[ req ]
+prompt = no
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+[ req_distinguished_name ]
+countryName                 = PL
+stateOrProvinceName         = Dolnośląskie
+localityName               = Wrocław
+organizationName           = SomeOrganization
+commonName                 = example.org
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1   = *.example.org
