@@ -64,13 +64,13 @@ write_basic_package_version_file(
     COMPATIBILITY AnyNewerVersion)
 
 install(FILES
-            "netutilsConfig.cmake"
+            "certifyConfig.cmake"
             "${CMAKE_BINARY_DIR}/certifyConfigVersion.cmake"
         DESTINATION lib/cmake/certify)
 
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/include/
         DESTINATION include
-        FILES_MATCHING PATTERN "*.hpp")
+        FILES_MATCHING PATTERN "*.hpp" PATTERN "*.ipp")
 
 install(TARGETS core
         EXPORT certifyTargets
