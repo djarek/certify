@@ -8,3 +8,8 @@ project
     <target-os>windows<variant>debug:<library-path>$(OPENSSL_ROOT)/debug/lib
     <variant>release:<library-path>$(OPENSSL_ROOT)/lib
   ;
+
+using boostbook ;
+using doxygen ;
+using docutils ;
+using asciidoctor ;

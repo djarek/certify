@@ -48,6 +48,7 @@ matrix:
           packages:
             - g++-6
             - lcov
+            - asciidoctor
           sources:
             - *base_sources
       script:
