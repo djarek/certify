@@ -139,7 +139,8 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
       oidSgcNetscape,
     };
 
-    ::CERT_CHAIN_PARA chain_params = {sizeof(chain_params)};
+    ::CERT_CHAIN_PARA chain_params{};
+    chain_params.cbSize = sizeof(chain_params);
     chain_params.RequestedUsage.dwType = USAGE_MATCH_TYPE_OR;
     chain_params.RequestedUsage.Usage.cUsageIdentifier =
       static_cast<DWORD>(chain_usage.size());
@@ -156,9 +157,11 @@ verify_certificate_chain(::X509_STORE_CTX* ctx)
       0,
       nullptr,
     };
-    ::CERT_CHAIN_POLICY_PARA policy_params = {sizeof(policy_params)};
+    ::CERT_CHAIN_POLICY_PARA policy_params{};
+    policy_params.cbSize = sizeof(policy_params);
     policy_params.pvExtraPolicyPara = &policyData;
-    ::CERT_CHAIN_POLICY_STATUS policy_status = {sizeof(policy_status)};
+    ::CERT_CHAIN_POLICY_STATUS policy_status{};
+    policy_status.cbSize = sizeof(policy_status);
 
     return ::CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
                                               cert_chain_context.get(),
